@@ -1,18 +1,20 @@
+<!-- src/App.vue -->
 <template>
   <div id="app">
-    <Register />
-    <Login />
+    <router-view />
   </div>
 </template>
 
 <script>
-import Register from './components/Register.vue'
-import Login from './components/Login.vue'
-
 export default {
-  components: {
-    Register,
-    Login
-  }
+  name: 'App'
 }
 </script>
+
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  text-align: center;
+  margin-top: 60px;
+}
+</style>

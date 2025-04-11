@@ -1,15 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '../components/Login.vue'
-import Register from '../components/Register.vue'
+
 import UserLogin from '../../frontend/Views/UserLogin.vue'
 import UserRegister from '../../frontend/Views/UserRegister.vue'
+import Home from '../../frontend/Views/Home.vue'
+//import Adopt from '../../frontend/Views/Adopt.vue'
+
+// Layout
+import MainLayout from '../layout/MainLayout.vue'
 
 const routes = [
-  { path: '/login', component: Login },
-  { path: '/register', component: Register },
-  { path: '/user/login', component: UserLogin },
-  { path: '/user/register', component: UserRegister }
-  // Puedes agregar más rutas aquí
+  {
+    path: '/',
+    component: MainLayout,
+    children: [
+      { path: '', component: Home },              
+      { path: '/user/login', component: UserLogin },
+      { path: '/user/register', component: UserRegister }
+     //{ path: 'adoptar', component: Adopt },       // /adoptar (protegido luego)
+    ]
+  },
 ]
 
 const router = createRouter({

@@ -14,16 +14,9 @@
     
 <style scoped>
   .footer {
-    background: #2c3e50;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    text-align: center;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    color: white;
-  }
+  background-color: #2c3e50;
+  color: white;
+  padding: 0.5rem 0;
+  text-align: center;
+}
 </style>

@@ -40,7 +40,7 @@ const isMenuOpen = ref(false);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 15px 80px;
   position: relative;
 }
 
@@ -86,7 +86,8 @@ const isMenuOpen = ref(false);
 .nav-link {
   color: #2c3e50;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 800;
+  font-size: 20px;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   transition: all 0.2s ease;

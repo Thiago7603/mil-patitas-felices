@@ -30,7 +30,11 @@
             password: this.password
           });
           console.log('Login exitoso', res.data);
+          const user = res.data.user
           // Aquí puedes redirigir o guardar token si fuera necesario
+
+          // Redirigir al perfil
+          this.$router.push(`/user/profile/${user.id}`)
         } catch (err) {
           this.error = 'Correo o contraseña incorrectos';
           console.error(err);

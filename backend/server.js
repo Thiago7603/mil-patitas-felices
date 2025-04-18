@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const path = require('path');
 
 const pool = require('./config/db'); // importamos la conexión
 const authRoutes = require('./routes/auth'); // importamos las rutas
@@ -11,6 +12,8 @@ const port = 4000;
 // Middlewares
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 // Ruta de prueba
 app.get('/api/test', async (req, res) => {

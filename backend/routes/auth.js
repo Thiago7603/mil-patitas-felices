@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const pool = require('../config/db');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 
 
@@ -71,15 +72,13 @@ router.post('/login', async (req, res) => {
 });
 
 
-// UserProfile
-router.post('/profile', async (req, res) => {
-  const { userId } = req.body;
-//router.get('/:id', async (req, res) => {
-  //const userId = req.params.id;
+// Get UserProfile
+router.get('/profile/:id', async (req, res) => {
+  const userId = req.params.id;
 
   try {
     const result = await pool.query(
-      'SELECT id, name, email, image, address, phone FROM users WHERE id = $1',
+      'SELECT id, name, email, profile_image, address, phone FROM users WHERE id = $1',
       [userId]
     );
     const user = result.rows[0];
@@ -93,29 +92,59 @@ router.post('/profile', async (req, res) => {
 });
 
 // Update UserProfile
-router.put('/:id', upload.single('image'), async (req, res) => {
+router.put('/profile/:id', upload.single('image'), async (req, res) => {
   const userId = req.params.id;
-  const { name, email, address, phone } = req.body;
-  const image = req.file ? req.file.filename : null;
+  const { name, email, phone, address } = req.body;
+  const newImage = req.file ? req.file.filename : null;
 
   try {
-    const result = await pool.query(
+    // Obtener la imagen anterior del usuario
+    const userResult = await pool.query('SELECT profile_image FROM users WHERE id = $1', [userId]);
+    const oldImage = userResult.rows[0]?.profile_image;
+    console.log('Imagen anterior del usuario:', oldImage);
+
+
+    // Actualizar la base de datos con la nueva información
+    const updateResult = await pool.query(
       `UPDATE users 
-       SET name = $1, email = $2, address = $3, phone = $4, image = COALESCE($5, image)
+       SET name = $1, email = $2, phone = $3, address = $4, profile_image = COALESCE($5, profile_image)
        WHERE id = $6
-       RETURNING id, name, email, address, phone, image`,
-      [name, email, address, phone, image, userId]
+       RETURNING *`,
+      [name, email, phone, address, newImage, userId]
     );
 
-    res.json({ message: 'Perfil actualizado', user: result.rows[0] });
+    const testFile = path.join(__dirname, 'uploads', 'user_1744963113454.jpeg');
+
+    fs.unlink(testFile, (err) => {
+      if (err) {
+        console.error('No se pudo eliminar:', err);
+      } else {
+        console.log('Imagen eliminada correctamente');
+      }
+    });
+    // Eliminar la imagen anterior si se subió una nueva
+    //if (fs.existsSync(imagePath)) {
+    //  fs.unlink(imagePath, (err) => {
+    //    if (err) {
+    //      console.error('Error al eliminar imagen anterior:', err);
+    //    } else {
+    //      console.log('Imagen anterior eliminada:', oldImage);
+    //    }
+    //  });
+    //} else {
+    //  console.log('Imagen anterior no existe físicamente:', imagePath);
+    //}
+
+    res.json({ message: 'Perfil actualizado', user: updateResult.rows[0] });
   } catch (err) {
     console.error('Error al actualizar perfil:', err);
     res.status(500).json({ message: 'Error del servidor' });
   }
 });
 
+
 // Change Password
-router.put('/:id/password', async (req, res) => {
+router.put('/profile/:id/password', async (req, res) => {
   const userId = req.params.id;
   const { currentPassword, newPassword } = req.body;
 

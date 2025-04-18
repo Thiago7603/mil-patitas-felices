@@ -17,7 +17,7 @@ const routes = [
       { path: '', component: Home },              
       { path: '/user/login', component: UserLogin },
       { path: '/user/register', component: UserRegister },
-      { path: '/profile', component: Profile },
+      { path: '/user/profile/:id', component: Profile },
      //{ path: 'adoptar', component: Adopt },       // /adoptar (protegido luego)
     ]
   },

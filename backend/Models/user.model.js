@@ -1,14 +1,14 @@
 const pool = require('../config/db');
 
 const getUserById = async (id) => {
-  const result = await pool.query('SELECT id, name, email, image FROM users WHERE id = $1', [id]);
+  const result = await pool.query('SELECT id, name, email, address, profile_image, phone FROM users WHERE id = $1', [id]);
   return result.rows[0];
 };
 
-const updateUser = async (id, name, email, image) => {
+const updateUser = async (id, name, email, address, phone, image) => {
   const result = await pool.query(
-    'UPDATE users SET name = $1, email = $2, image = $3 WHERE id = $4 RETURNING *',
-    [name, email, image, id]
+    'UPDATE users SET name = $1, email = $2, phone, = $3, addres = $4, profile_image = $5 WHERE id = $6 RETURNING *',
+    [name, email, address, phone, image, id]
   );
   return result.rows[0];
 };

@@ -13,18 +13,18 @@ const updateUser = async (id, name, email, address, phone, image) => {
   return result.rows[0];
 };
 
-const updatePassword = async (id, hashedPassword) => {
-  await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, id]);
+const getUserByEmail = async (email) => {
+  const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+  return result.rows[0];
 };
 
-const getUserPassword = async (id) => {
-  const result = await pool.query('SELECT password FROM users WHERE id = $1', [id]);
-  return result.rows[0]?.password;
+const updatePassword = async (id, newHash) => {
+  await pool.query('UPDATE users SET password = $1 WHERE id = $2', [newHash, id]);
 };
 
 module.exports = {
   getUserById,
   updateUser,
   updatePassword,
-  getUserPassword
+  getUserByEmail
 };

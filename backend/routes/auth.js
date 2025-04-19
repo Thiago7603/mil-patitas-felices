@@ -6,8 +6,18 @@ const pool = require('../config/db');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
+const userController = require('../Controllers/userController');
 
-
+// Configuración del transportador de correo
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 
 // Configuración de multer para subida de imágenes
 const storage = multer.diskStorage({
@@ -142,29 +152,92 @@ router.put('/profile/:id', upload.single('image'), async (req, res) => {
   }
 });
 
+router.post('/forgot-password', userController.sendResetCode);
+router.post('/reset-password', userController.resetPassword);
+
+// Enviar código de recuperación
+//router.post('/profile/:id/send-reset-code', async (req, res) => {
+//  const userId = req.params.id;
+
+//  try {
+//    const result = await pool.query('SELECT email FROM users WHERE id = $1', [userId]);
+//    const user = result.rows[0];
+
+ //   if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+//    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6 dígitos
+
+//    await pool.query(
+//      'UPDATE users SET reset_code = $1, reset_code_expire = NOW() + interval \'10 minutes\' WHERE id = $2',
+//      [code, userId]
+//    );
+
+//    await transporter.sendMail({
+//      from: process.env.EMAIL_USER,
+//      to: user.email,
+//      subject: 'Código para restablecer contraseña',
+//      html: `<p>Tu código es: <b>${code}</b>. Tiene una validez de 10 minutos.</p>`
+//    });
+
+//    res.json({ message: 'Código enviado por correo' });
+//  } catch (err) {
+//    console.error('Error al enviar código:', err);
+  //  res.status(500).json({ message: 'Error del servidor' });
+ // }
+//});
+
+// Confirmar código y cambiar contraseña
+//router.put('/profile/:id/reset-password', async (req, res) => {
+//  const userId = req.params.id;
+ // const { code, newPassword } = req.body;
+
+//  try {
+//    const result = await pool.query('SELECT reset_code, reset_code_expire FROM users WHERE id = $1', [userId]);
+//    const user = result.rows[0];
+
+//    if (!user || user.reset_code !== code) {
+//      return res.status(400).json({ message: 'Código inválido' });
+//    }
+
+//    if (new Date(user.reset_code_expire) < new Date()) {
+//      return res.status(400).json({ message: 'Código expirado' });
+//    }
+
+//    const hashed = await bcrypt.hash(newPassword, 10);
+//    await pool.query(
+//      'UPDATE users SET password = $1, reset_code = NULL, reset_code_expire = NULL WHERE id = $2',
+//      [hashed, userId]
+ //   );
+
+//    res.json({ message: 'Contraseña actualizada correctamente' });
+//  } catch (err) {
+//    console.error('Error al restablecer contraseña:', err);
+//    res.status(500).json({ message: 'Error del servidor' });
+//  }
+//});
 
 // Change Password
-router.put('/profile/:id/password', async (req, res) => {
-  const userId = req.params.id;
-  const { currentPassword, newPassword } = req.body;
+//router.put('/profile/:id/password', async (req, res) => {
+//  const userId = req.params.id;
+//  const { currentPassword, newPassword } = req.body;
 
-  try {
-    const result = await pool.query('SELECT password FROM users WHERE id = $1', [userId]);
-    const user = result.rows[0];
+//  try {
+//    const result = await pool.query('SELECT password FROM users WHERE id = $1', [userId]);
+//    const user = result.rows[0];
 
-    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+//    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
 
-    const valid = await bcrypt.compare(currentPassword, user.password);
-    if (!valid) return res.status(400).json({ message: 'Contraseña actual incorrecta' });
+//    const valid = await bcrypt.compare(currentPassword, user.password);
+//    if (!valid) return res.status(400).json({ message: 'Contraseña actual incorrecta' });
 
-    const hashed = await bcrypt.hash(newPassword, 10);
-    await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashed, userId]);
+ //   const hashed = await bcrypt.hash(newPassword, 10);
+ //   await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashed, userId]);
 
-    res.json({ message: 'Contraseña actualizada' });
-  } catch (err) {
-    console.error('Error al cambiar contraseña:', err);
-    res.status(500).json({ message: 'Error del servidor' });
-  }
-});
+ //   res.json({ message: 'Contraseña actualizada' });
+ // } catch (err) {
+ //   console.error('Error al cambiar contraseña:', err);
+ //   res.status(500).json({ message: 'Error del servidor' });
+ // }
+//});
 
 module.exports = router;

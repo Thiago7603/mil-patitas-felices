@@ -33,15 +33,32 @@
   
       <hr />
   
-      <form @submit.prevent="changePassword">
-        <h3>Cambiar Contraseña</h3>
-        <div>
-          <label>Nueva Contraseña:</label>
-          <input v-model="newPassword" type="password" required />
-        </div>
-        <button type="submit">Actualizar Contraseña</button>
-      </form>
+    <!-- Botón para mostrar formulario de recuperación -->
+    <button @click="showRecovery = !showRecovery">
+      ¿Olvidaste tu contraseña?
+    </button>
+
+    <!-- Formulario de recuperación -->
+    <div v-if="showRecovery" style="margin-top: 20px;">
+      <h3>Recuperar contraseña</h3>
+
+      <div v-if="!codeSent">
+        <label>Correo electrónico:</label>
+        <input v-model="recoveryEmail" type="email" required />
+        <button @click="sendResetCode">Enviar código</button>
+      </div>
+
+      <div v-else>
+        <label>Código de verificación:</label>
+        <input v-model="resetCode" type="text" required />
+
+        <label>Nueva contraseña:</label>
+        <input v-model="newPassword" type="password" required />
+
+        <button @click="resetPassword">Restablecer contraseña</button>
+      </div>
     </div>
+  </div>
   </template>
   
   <script>
@@ -59,7 +76,14 @@
         profile_image: ''
       },
       imageFile: null,
-      previewImage: null
+      previewImage: null,
+
+      // Recuperar contraseña
+      showRecovery: false,
+      recoveryEmail: '',
+      resetCode: '',
+      newPassword: '',
+      codeSent: false
     }
   },
     computed: {
@@ -113,6 +137,35 @@
       } catch (err) {
         console.error('Error al actualizar perfil:', err)
         alert('Ocurrió un error al actualizar el perfil')
+      }
+    },
+    async sendResetCode() {
+      try {
+        await axios.post('http://localhost:4000/api/forgot-password', {
+          email: this.recoveryEmail
+        })
+        this.codeSent = true
+        alert('Código enviado al correo electrónico')
+      } catch (err) {
+        console.error('Error al enviar código:', err)
+        alert('Error al enviar el código')
+      }
+    },
+    async resetPassword() {
+      try {
+        await axios.post('http://localhost:4000/api/reset-password', {
+          email: this.recoveryEmail,
+          code: this.resetCode,
+          newPassword: this.newPassword
+        })
+        alert('Contraseña restablecida correctamente')
+        this.showRecovery = false
+        this.codeSent = false
+        this.resetCode = ''
+        this.newPassword = ''
+      } catch (err) {
+        console.error('Error al restablecer contraseña:', err)
+        alert('Error al restablecer la contraseña')
       }
     }
   }

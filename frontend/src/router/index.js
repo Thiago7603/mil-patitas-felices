@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import UserLogin from '../../frontend/Views/UserLogin.vue'
-import UserRegister from '../../frontend/Views/UserRegister.vue'
-import Home from '../../frontend/Views/Home.vue'
+import UserLogin from '../../Views/UserLogin.vue'
+import UserRegister from '../../Views/UserRegister.vue'
+import Home from '../../Views/Home.vue'
 import Profile from '../components/UserProfile.vue'
 //import Adopt from '../../frontend/Views/Adopt.vue'
 

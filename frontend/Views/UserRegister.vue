@@ -46,7 +46,7 @@
   </template>
   
   <script>
-  import Register from '../../src/components/Register.vue'
+  import Register from '../src/components/Register.vue'
   
   export default {
     name: 'UserRegister',

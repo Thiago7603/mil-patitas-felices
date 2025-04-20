@@ -45,7 +45,7 @@
           })
           console.log('✅ Registro exitoso', res.data)
           // Redirigir a login
-          this.$router.push('/login')
+          this.$router.push('/user/login')
         } catch (err) {
           this.error = err.response?.data?.message || 'Error al registrar'
           console.error(err)

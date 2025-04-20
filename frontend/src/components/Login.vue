@@ -13,7 +13,7 @@
   
   <script>
   import axios from 'axios'
-  
+
   export default {
     data() {
       return {
@@ -29,15 +29,18 @@
             email: this.email,
             password: this.password
           });
+          
           console.log('Login exitoso', res.data);
-          const user = res.data.user
-          // Aquí puedes redirigir o guardar token si fuera necesario
 
-          // Redirigir al perfil
-          this.$router.push(`/user/profile/${user.id}`)
+          // Guarda el token con nombre consistente
+          localStorage.setItem('token', res.data.token); // Cambiado a 'token'
+          localStorage.setItem('user', JSON.stringify(res.data.user));
+
+          // Redirigir
+          this.$router.push(`/user/profile/${res.data.user.id}`);
         } catch (err) {
-          this.error = 'Correo o contraseña incorrectos';
-          console.error(err);
+          this.error = err.response?.data?.message || 'Correo o contraseña incorrectos';
+          console.error('Error detallado:', err.response);
         }
       }
     }

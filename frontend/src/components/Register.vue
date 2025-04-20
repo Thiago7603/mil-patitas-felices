@@ -42,13 +42,22 @@
             address: this.address,
             phone: this.phone,
             role: this.role
-          })
-          console.log('✅ Registro exitoso', res.data)
-          // Redirigir a login
-          this.$router.push('/user/login')
+          });
+          
+          console.log('✅ Registro exitoso', res.data);
+          
+          // Guardar el token en localStorage
+          localStorage.setItem('token', res.data.token);
+          
+          // Guardar datos del usuario (opcional)
+          localStorage.setItem('user', JSON.stringify(res.data.user));
+          
+          // Redirigir al dashboard o página principal
+          this.$router.push('/');
+          
         } catch (err) {
-          this.error = err.response?.data?.message || 'Error al registrar'
-          console.error(err)
+          this.error = err.response?.data?.message || 'Error al registrar';
+          console.error(err);
         }
       }
     }

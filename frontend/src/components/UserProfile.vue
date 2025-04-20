@@ -96,14 +96,21 @@
     },
     methods: {
     async getProfile() {
+      const token = localStorage.getItem('jwt_token');
       try {
-        const res = await axios.get(`http://localhost:4000/api/profile/${this.userId}`)
-        this.user = res.data
+        const res = await axios.get(`http://localhost:4000/api/profile/${this.userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        this.user = res.data;
         if (res.data.profile_image) {
-          this.previewImage = `http://localhost:4000/uploads/${res.data.profile_image}`
+          this.previewImage = `http://localhost:4000/uploads/${res.data.profile_image}`;
         }
       } catch (err) {
-        console.error('Error al cargar perfil:', err)
+        console.error('Error al cargar perfil:', err);
+        alert('Debes iniciar sesión para ver tu perfil');
+        this.$router.push('/login');
       }
     },
     onImageSelected(event) {

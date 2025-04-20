@@ -4,6 +4,8 @@ import UserLogin from '../../Views/UserLogin.vue'
 import UserRegister from '../../Views/UserRegister.vue'
 import Home from '../../Views/Home.vue'
 import Profile from '../components/UserProfile.vue'
+import AnimalRegister from '../../Views/AnimalRegister.vue';
+import AnimalEdit from '../../Views/AnimalEdit.vue'
 //import Adopt from '../../frontend/Views/Adopt.vue'
 
 // Layout
@@ -18,6 +20,8 @@ const routes = [
       { path: '/user/login', component: UserLogin },
       { path: '/user/register', component: UserRegister },
       { path: '/user/profile/:id', component: Profile },
+      { path: '/registrar-animal', component: AnimalRegister },
+      { path: '/editar-animal/:id', component: AnimalEdit },
      //{ path: 'adoptar', component: Adopt },       // /adoptar (protegido luego)
     ]
   },

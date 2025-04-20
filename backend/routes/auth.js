@@ -6,6 +6,7 @@ const pool = require('../config/db');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 const userController = require('../Controllers/userController');
@@ -57,27 +58,69 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
+  // Validación básica
+  if (!email || !password) {
+    return res.status(400).json({ 
+      success: false,
+      message: 'Email y contraseña son requeridos' 
+    });
+  }
+
   try {
+    // 1. Buscar usuario
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
     const user = result.rows[0];
 
-    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+    if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Usuario no encontrado' 
+      });
+    }
 
+    // 2. Verificar contraseña
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) return res.status(401).json({ message: 'Contraseña incorrecta' });
+    if (!valid) {
+      return res.status(401).json({ 
+        success: false,
+        message: 'Credenciales inválidas' // Mensaje genérico por seguridad
+      });
+    }
 
+    // 3. Generar token con más información relevante
+    const tokenPayload = {
+      id: user.id,          // Usar 'id' en lugar de 'userId' para consistencia
+      email: user.email,
+      role: user.role,      // Añadir el rol para autorización
+      name: user.name       // Información útil para el frontend
+    };
+
+    const token = jwt.sign(
+      tokenPayload,
+      process.env.JWT_SECRET || 'secreto', 
+      { expiresIn: '1h' }
+    );
+
+    // 4. Responder con datos relevantes
     res.status(200).json({
+      success: true,
       message: 'Login exitoso',
+      token,
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        // Otros datos que necesites en el frontend
       }
     });
+
   } catch (err) {
     console.error('Error en /login:', err);
-    res.status(500).json({ message: 'Error del servidor' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Error en el servidor al procesar la solicitud' 
+    });
   }
 });
 

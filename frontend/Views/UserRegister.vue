@@ -58,88 +58,88 @@
   
   <style scoped>
   .app-container {
-    display: flex;
-    min-height: 100vh;
-    max-height: 94vh;
-    overflow: hidden;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
   }
-  
-  /* Hero Section */
+
+  /* HERO */
   .hero-section {
     flex: 1;
-    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
-                url('../../src/assets/images/pets-hero.jpg') center/cover no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+      url('../../src/assets/images/pets-hero.jpg') center/cover no-repeat;
     color: white;
     display: flex;
-    flex-direction: column;
     justify-content: center;
+    align-items: center;
+    text-align: center;
     position: relative;
     overflow-y: auto;
     padding: 2rem;
   }
-  
+
   .hero-overlay {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(52, 152, 219, 0.8) 0%, rgba(155, 89, 182, 0.6) 100%);
+    background: linear-gradient(135deg, rgba(6, 164, 58, 0.8) 0%, rgba(255, 255, 255, 0.759) 100%);
     z-index: 0;
   }
-  
+
   .hero-content {
     position: relative;
     z-index: 1;
     max-width: 600px;
-    margin: 0 auto;
     width: 100%;
     padding: 1rem;
   }
-  
+
   .logo-container {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.75rem;
     margin-bottom: 2rem;
   }
-  
+
   .logo-icon {
     font-size: 2rem;
   }
-  
+
   .logo-text {
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0;
   }
-  
+
   .hero-title {
     font-size: clamp(1.8rem, 4vw, 2.5rem);
     font-weight: 700;
     line-height: 1.2;
     margin-bottom: 1rem;
   }
-  
+
   .hero-title span {
     color: #FFD166;
   }
-  
+
   .hero-description {
     font-size: clamp(1rem, 1.2vw, 1.1rem);
     line-height: 1.6;
     opacity: 0.9;
     margin-bottom: 2rem;
   }
-  
+
   .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1.2rem;
     margin-top: 1.5rem;
   }
-  
+
   .feature-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -148,29 +148,29 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-  
+
   .feature-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   }
-  
+
   .feature-icon {
     font-size: 1.8rem;
     margin-bottom: 0.8rem;
   }
-  
+
   .feature-card h3 {
     font-size: 1.1rem;
     margin-bottom: 0.4rem;
   }
-  
+
   .feature-card p {
     font-size: 0.85rem;
     opacity: 0.8;
     line-height: 1.5;
   }
-  
-  /* Register Section */
+
+  /* REGISTER */
   .register-section {
     flex: 0 0 450px;
     display: flex;
@@ -179,130 +179,118 @@
     background: #FFFFFF;
     overflow-y: auto;
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
   }
-  
+
   .register-container {
-    width: 100%;
-    max-width: 380px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 400px;
   }
-  
+
   .register-header {
-    margin-bottom: 2.5rem;
     text-align: center;
   }
-  
+
   .register-header h2 {
-    font-size: 1.7rem;
-    color: #2C3E50;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
     margin-bottom: 0.5rem;
-    font-weight: 600;
   }
-  
+
   .register-header p {
-    color: #7F8C8D;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    color: #7f8c8d;
   }
-  
+
   .register-footer {
-    margin-top: 2rem;
     text-align: center;
     font-size: 0.9rem;
-    color: #34495E;
+    color: #34495e;
   }
-  
+
   .register-footer a {
     text-decoration: none;
     color: inherit;
   }
-  
+
   .register-footer strong {
-    color: #3498DB;
+    color: #42b883;
     font-weight: 600;
     cursor: pointer;
     transition: color 0.3s ease;
-    padding: 0.2rem 0;
     position: relative;
   }
-  
+
   .register-footer strong:hover {
-    color: #2980B9;
+    color: #42b883;
   }
-  
+
   .register-footer strong::after {
     content: '';
     position: absolute;
-    bottom: 0;
+    bottom: -2px;
     left: 0;
     width: 0;
     height: 2px;
-    background-color: #3498DB;
+    background-color: #50a16f;
     transition: width 0.3s ease;
   }
-  
+
   .register-footer strong:hover::after {
     width: 100%;
   }
-  
-  /* Responsive Design */
+
+  /* RESPONSIVE */
   @media (max-width: 992px) {
     .app-container {
       flex-direction: column;
-      max-height: none;
       overflow-y: auto;
     }
-    
+
     .hero-section {
-      padding: 3rem 1.5rem;
       min-height: auto;
+      padding: 3rem 1.5rem;
     }
-    
+
     .register-section {
       flex: 1;
-      min-height: auto;
-      padding: 3rem 0;
+      padding: 3rem 1.5rem;
     }
-    
-    .register-container {
-      padding: 2rem 1.5rem;
-      max-width: 500px;
-    }
-    
+
     .features-grid {
       grid-template-columns: 1fr;
-      max-width: 500px;
     }
   }
-  
-  @media (max-width: 768px) {
-    .hero-section {
-      padding: 2rem 1rem;
-    }
-    
-    .register-container {
-      padding: 2rem 1rem;
-    }
-  }
-  
+
   @media (max-width: 480px) {
-    .hero-content {
-      padding: 0.5rem;
+    .register-container {
+      padding: 2rem 1.25rem;
     }
-    
-    .logo-container {
-      margin-bottom: 1.5rem;
-    }
-    
+
     .hero-title {
       font-size: 1.7rem;
     }
-    
+
     .register-header h2 {
       font-size: 1.6rem;
     }
-    
+
     .feature-card {
       padding: 1.2rem;
     }
+
+    .logo-container {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
   }
+
   </style>

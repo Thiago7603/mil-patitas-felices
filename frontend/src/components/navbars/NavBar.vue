@@ -10,11 +10,33 @@
       <div class="nav-container" :class="{ 'is-open': isMenuOpen }">
         <nav class="nav">
           <router-link to="/" class="nav-link">Home</router-link>
-          <router-link to="/" class="nav-link">Store</router-link>
+          
+          <!-- Opciones para usuarios autenticados -->
+          <template v-if="user">
+            <!-- Opciones para refugios -->
+            <template v-if="user.role === 'refugio'">
+              <router-link to="/user/profile" class="nav-link">Perfil</router-link>
+              <router-link to="/home/refugio" class="nav-link">Casa</router-link>
+              <router-link to="/registrar-animal" class="nav-link">Publicar</router-link>
+            </template>
+            
+            <!-- Opciones para adoptantes -->
+            <template v-else-if="user.role === 'adoptante'">
+              <router-link to="/user/profile" class="nav-link">Perfil</router-link>
+              <router-link to="/favorites" class="nav-link">Favoritos</router-link>
+              <router-link to="/adopt" class="nav-link">Adoptar</router-link>
+            </template>
+          </template>
         </nav>
+        
         <div class="auth-buttons">
-          <router-link to="/user/login" class="btn-login">Login</router-link>
-          <router-link to="/user/register" class="btn-register">Register</router-link>
+          <template v-if="!user">
+            <router-link to="/user/login" class="btn-login">Login</router-link>
+            <router-link to="/user/register" class="btn-register">Register</router-link>
+          </template>
+          <template v-else>
+            <button @click="handleLogout" class="btn-login">Cerrar sesión</button>
+          </template>
         </div>
       </div>
     </div>
@@ -22,12 +44,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 const isMenuOpen = ref(false);
+const user = ref<any>(null);
+const router = useRouter();
+
+// Obtener usuario al cargar el componente
+onMounted(() => {
+  const userData = localStorage.getItem('user');
+  if (userData) {
+    user.value = JSON.parse(userData);
+  }
+});
+
+// Función para cerrar sesión
+const handleLogout = () => {
+  localStorage.removeItem('user');
+  localStorage.removeItem('token');
+  user.value = null;
+  router.push('/');
+};
 </script>
 
 <style scoped>
+/* Todos los estilos anteriores se mantienen igual */
 .header {
   background: rgb(255, 255, 255);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);

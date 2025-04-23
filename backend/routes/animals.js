@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const { createAnimal, editAnimal, deleteAnimal } = require('../controllers/animalController');
+const { createAnimal, editAnimal, deleteAnimal } = require('../Controllers/animalController');
 const authMiddleware = require('../middleware/authMiddleware');
-const { getAnimalById } = require('../controllers/animalController');
+const { getAnimalById } = require('../Controllers/animalController');
 
 // Configuración para subir imágenes
 const storage = multer.diskStorage({

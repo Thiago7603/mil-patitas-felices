@@ -85,6 +85,7 @@
     "pg-types": "^2.2.0",
     "pgpass": "^1.0.5",
     "picocolors": "^1.1.1",
+    "pinia": "^3.0.2",
     "postcss": "^8.5.3",
     "postgres-array": "^2.0.0",
     "postgres-bytea": "^1.0.0",

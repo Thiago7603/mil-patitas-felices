@@ -11,42 +11,41 @@
   </div>
 </template>
 
-<script>
-import { setUser } from '../states/userState'
-import axios from 'axios'
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import { useAuthStore } from '@/stores/authStore';
 
-export default {
-  data() {
-    return {
-      email: '',
-      password: '',
-      error: ''
-    }
-  },
-  methods: {
-    async handleLogin() {
-      try {
-        const res = await axios.post('http://localhost:4000/api/login', {
-          email: this.email,
-          password: this.password
-        });
-        
-        console.log('Login exitoso', res.data);
+const email = ref('');
+const password = ref('');
+const error = ref('');
+const router = useRouter();
+const auth = useAuthStore();
 
-        // Guarda el token con nombre consistente
-        localStorage.setItem('token', res.data.token); // Cambiado a 'token'
-        localStorage.setItem('user', JSON.stringify(res.data.user));
-        setUser(res.data.user); //actualiza la variable global
+const handleLogin = async () => {
+  try {
+    const res = await axios.post('http://localhost:4000/api/login', {
+      email: email.value,
+      password: password.value
+    });
 
-        // Redirigir
-        this.$router.push("/");
-      } catch (err) {
-        this.error = err.response?.data?.message || 'Correo o contraseña incorrectos';
-        console.error('Error detallado:', err.response);
-      }
-    }
+    const userData = res.data.user;
+    const token = res.data.token;
+
+    // Guardar token
+    localStorage.setItem('token', token);
+
+    // Usar el store para guardar el usuario
+    auth.login(userData);
+
+    // Redirigir
+    router.push(`/user/profile/${userData.id}`);
+  } catch (err: any) {
+    error.value = err.response?.data?.message || 'Correo o contraseña incorrectos';
+    console.error('Error detallado:', err.response);
   }
-}
+};
 </script>
 <style scoped>
 div {

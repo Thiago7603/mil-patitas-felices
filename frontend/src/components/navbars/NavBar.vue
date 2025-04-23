@@ -10,27 +10,24 @@
       <div class="nav-container" :class="{ 'is-open': isMenuOpen }">
         <nav class="nav">
           <router-link to="/" class="nav-link">Home</router-link>
-          
-          <!-- Opciones para usuarios autenticados -->
-          <template v-if="user">
-            <!-- Opciones para refugios -->
-            <template v-if="user.role === 'refugio'">
-              <router-link to="/user/profile" class="nav-link">Perfil</router-link>
+
+          <template v-if="auth.user">
+            <template v-if="auth.user.role === 'refugio'">
+              <router-link :to="`/user/profile/${auth.user.id}`" class="nav-link">Perfil</router-link>
               <router-link to="/home/refugio" class="nav-link">Casa</router-link>
               <router-link to="/registrar-animal" class="nav-link">Publicar</router-link>
             </template>
-            
-            <!-- Opciones para adoptantes -->
-            <template v-else-if="user.role === 'adoptante'">
-              <router-link to="/user/profile" class="nav-link">Perfil</router-link>
+
+            <template v-else-if="auth.user.role === 'adoptante'">
+              <router-link :to="`/user/profile/${auth.user.id}`" class="nav-link">Perfil</router-link>
               <router-link to="/favorites" class="nav-link">Favoritos</router-link>
               <router-link to="/adopt" class="nav-link">Adoptar</router-link>
             </template>
           </template>
         </nav>
-        
+
         <div class="auth-buttons">
-          <template v-if="!user">
+          <template v-if="!auth.user">
             <router-link to="/user/login" class="btn-login">Login</router-link>
             <router-link to="/user/register" class="btn-register">Register</router-link>
           </template>
@@ -43,29 +40,19 @@
   </header>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
 
-const isMenuOpen = ref(false);
-const user = ref<any>(null);
-const router = useRouter();
+const isMenuOpen = ref(false)
+const router = useRouter()
+const auth = useAuthStore()
 
-// Obtener usuario al cargar el componente
-onMounted(() => {
-  const userData = localStorage.getItem('user');
-  if (userData) {
-    user.value = JSON.parse(userData);
-  }
-});
-
-// Función para cerrar sesión
 const handleLogout = () => {
-  localStorage.removeItem('user');
-  localStorage.removeItem('token');
-  user.value = null;
-  router.push('/');
-};
+  auth.logout()
+  router.push('/')
+}
 </script>
 
 <style scoped>

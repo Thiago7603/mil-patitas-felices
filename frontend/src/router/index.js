@@ -3,7 +3,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import UserLogin from '../../Views/UserLogin.vue'
 import UserRegister from '../../Views/UserRegister.vue'
 import Home from '../../Views/Home.vue'
-import Profile from '../components/UserProfile.vue'
 import AnimalRegister from '../../Views/AnimalRegister.vue'
 import AnimalEdit from '../../Views/AnimalEdit.vue'
 import HomeRefugio from '../../Views/HomeRefugio.vue'
@@ -21,11 +20,10 @@ const routes = [
       { path: '', component: Home },              
       { path: '/user/login', component: UserLogin },
       { path: '/user/register', component: UserRegister },
-      { path: '/user/profile/:id', component: Profile },
       { path: '/registrar-animal', component: AnimalRegister },
       { path: '/editar-animal/:id', component: AnimalEdit },
       { path: '/home/refugio', component: HomeRefugio },
-      { path: '/user/profile', component: UserPerfil },
+      { path: '/user/profile/:id', component: UserPerfil },
      //{ path: 'adoptar', component: Adopt },       // /adoptar (protegido luego)
     ]
   },

@@ -4,7 +4,7 @@
     <section class="profile-hero">
       <div class="profile-hero-content">
         <h1 class="profile-hero-title">Mi Perfil</h1>
-        <p class="profile-hero-subtitle">Administra tu información personal y preferencias</p>
+        <p class="profile-hero-subtitle">Administra tu información personal</p>
       </div>
     </section>
 

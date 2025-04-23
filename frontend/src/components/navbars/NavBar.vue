@@ -9,7 +9,6 @@
       </button>
       <div class="nav-container" :class="{ 'is-open': isMenuOpen }">
         <nav class="nav">
-          <router-link to="/" class="nav-link">Home</router-link>
 
           <template v-if="auth.user">
             <template v-if="auth.user.role === 'refugio'">
@@ -28,6 +27,7 @@
 
         <div class="auth-buttons">
           <template v-if="!auth.user">
+            <router-link to="/" class="nav-link">Home</router-link>
             <router-link to="/user/login" class="btn-login">Login</router-link>
             <router-link to="/user/register" class="btn-register">Register</router-link>
           </template>

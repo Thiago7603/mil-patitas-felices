@@ -121,14 +121,14 @@
     "unpipe": "^1.0.0",
     "util-deprecate": "^1.0.2",
     "vary": "^1.1.2",
-    "vite": "^6.2.4",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "wrappy": "^1.0.2",
     "xtend": "^4.0.2"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.3"
+    "@vitejs/plugin-vue": "^5.2.3",
+    "vite": "^6.3.3"
   },
   "scripts": {
     "dev": "vite",

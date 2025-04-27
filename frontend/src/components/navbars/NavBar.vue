@@ -12,16 +12,16 @@
 
           <template v-if="auth.user">
             <template v-if="auth.user.role === 'refugio'">
-              <router-link :to="`/user/profile/${auth.user.id}`" class="nav-link">Perfil</router-link>
               <router-link to="/home/refugio" class="nav-link">Casa</router-link>
               <router-link to="/registrar-animal" class="nav-link">Publicar</router-link>
+              <router-link :to="`/user/profile/${auth.user.id}`" class="nav-link">Perfil</router-link>
             </template>
 
             <template v-else-if="auth.user.role === 'adoptante'">
-              <router-link :to="`/user/profile/${auth.user.id}`" class="nav-link">Perfil</router-link>
-              <router-link to="/favorites" class="nav-link">Favoritos</router-link>
               <router-link to="/adopt" class="nav-link">Adoptar</router-link>
-            </template>
+              <router-link to="/favorites" class="nav-link">Favoritos</router-link>
+              <router-link :to="`/user/profile/${auth.user.id}`" class="nav-link">Perfil</router-link>
+            </template> 
           </template>
         </nav>
 
@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '../../stores/authStore';
 
 const isMenuOpen = ref(false);
 const router = useRouter();

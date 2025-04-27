@@ -7,7 +7,7 @@ import AnimalRegister from '../../Views/AnimalRegister.vue'
 import AnimalEdit from '../../Views/AnimalEdit.vue'
 import HomeRefugio from '../../Views/HomeRefugio.vue'
 import UserPerfil from '../../Views/UserPerfil.vue'
-//import Adopt from '../../frontend/Views/Adopt.vue'
+import Adopt from '../../Views/Adopt.vue'
 
 // Layout
 import MainLayout from '../layout/MainLayout.vue'
@@ -24,7 +24,7 @@ const routes = [
       { path: '/editar-animal/:id', component: AnimalEdit },
       { path: '/home/refugio', component: HomeRefugio },
       { path: '/user/profile/:id', component: UserPerfil },
-     //{ path: 'adoptar', component: Adopt },       // /adoptar (protegido luego)
+      { path: '/adopt', component: Adopt },    
     ]
   },
 ]

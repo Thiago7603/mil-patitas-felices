@@ -22,7 +22,7 @@ const routes = [
       { path: '/user/register', component: UserRegister },
       { path: '/registrar-animal', component: AnimalRegister },
       { path: '/editar-animal/:id', component: AnimalEdit },
-      { path: '/home/refugio', component: HomeRefugio },
+      { path: '/home/refugio/:id', component: HomeRefugio },
       { path: '/user/profile/:id', component: UserPerfil },
       { path: '/adopt', component: Adopt },    
     ]

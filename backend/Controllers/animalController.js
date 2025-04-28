@@ -1,4 +1,29 @@
 const pool = require('../config/db'); // Asegúrate de tener tu conexión a PostgreSQL aquí
+const multer = require('multer');
+const path = require('path');
+
+// Configuración de Multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = `animal_${Date.now()}${path.extname(file.originalname)}`;
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten archivos de imagen'), false);
+    }
+  }
+}).array('images', 5); // Máximo 5 imágenes
 
 // Crear animal
 const createAnimal = async (req, res) => {
@@ -17,15 +42,24 @@ const createAnimal = async (req, res) => {
 
     const animalId = result.rows[0].id;
 
-    const imageUrls = req.files.map(file => `/uploads/${file.filename}`);
-    for (const url of imageUrls) {
-      await pool.query(
-        `INSERT INTO animal_images (animal_id, image_url) VALUES ($1, $2)`,
-        [animalId, url]
-      );
-    }
+      // Guardar nombres de archivo en la base de datos
+      if (req.files && req.files.length > 0) {
+        const imageNames = req.files.map(file => file.filename);
+        
+        for (const fileName of imageNames) {
+          await pool.query(
+            `INSERT INTO animal_images (animal_id, image_url) VALUES ($1, $2)`,
+            [animalId, fileName] // Solo el nombre del archivo
+          );
+        }
+      }
 
-    res.status(201).json({ message: 'Animal registrado con éxito', animalId });
+      res.status(201).json({ 
+        success: true,
+        animalId,
+        images: req.files?.map(f => f.filename) || [] 
+      });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error al registrar el animal' });
@@ -33,28 +67,52 @@ const createAnimal = async (req, res) => {
 };
 
 // Obtener un animal por su ID
-const getAnimalById = async (req, res) => {
-    const { id } = req.params;
+//const getAnimalById = async (req, res) => {
+//    const { id } = req.params;
   
+//    try {
+//      const animalResult = await pool.query('SELECT * FROM animals WHERE id = $1', [id]);
+//      if (animalResult.rows.length === 0) {
+//        return res.status(404).json({ error: 'Animal no encontrado' });
+//      }
+  
+//      const imagesResult = await pool.query('SELECT image_url FROM animal_images WHERE animal_id = $1', [id]);
+  
+//      res.json({
+//        ...animalResult.rows[0],
+//        images: imagesResult.rows.map(img => img.image_url)
+//      });
+//    } catch (err) {
+//      console.error('Error al obtener animal por ID:', err);
+//      res.status(500).json({ error: 'Error al obtener animal' });
+//    }
+//  };
+
+  // Controlador para obtener animales POR REFUGIO (usando created_by)
+  const getAnimalsByRefugio = async (req, res) => {
+    const refugioId = req.params.id; // ID del refugio (usuario creador)
+
     try {
-      const animalResult = await pool.query('SELECT * FROM animals WHERE id = $1', [id]);
-      if (animalResult.rows.length === 0) {
-        return res.status(404).json({ error: 'Animal no encontrado' });
-      }
-  
-      const imagesResult = await pool.query('SELECT image_url FROM animal_images WHERE animal_id = $1', [id]);
-  
-      res.json({
-        ...animalResult.rows[0],
-        images: imagesResult.rows.map(img => img.image_url)
-      });
-    } catch (err) {
-      console.error('Error al obtener animal por ID:', err);
-      res.status(500).json({ error: 'Error al obtener animal' });
+      // 1. Obtener todos los animales del refugio
+      const animalsResult = await pool.query(
+        `SELECT a.*, 
+        (SELECT ARRAY(
+          SELECT image_url FROM animal_images WHERE animal_id = a.id
+        )) AS images
+        FROM animals a
+        WHERE a.created_by = $1`,
+        [refugioId]
+      );
+
+      // 2. Siempre devolver un array (aunque esté vacío)
+      res.status(200).json(animalsResult.rows);
+
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json([]); // Devuelve array vacío en caso de error
     }
   };
   
-
     // Editar animal
     const editAnimal = async (req, res) => {
         const { name, species, gender, age, size, health_status, story, adoption_requirements, location } = req.body;
@@ -131,5 +189,5 @@ const deleteAnimal = async (req, res) => {
     }
   };
 
-module.exports = { createAnimal, editAnimal, deleteAnimal, getAnimalById };
+module.exports = { createAnimal, editAnimal, deleteAnimal, getAnimalsByRefugio };
 

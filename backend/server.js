@@ -30,6 +30,7 @@ app.get('/api/test', async (req, res) => {
 // Usar rutas de autenticación
 app.use('/api', authRoutes);
 app.use('/api/animals', animalRoutes); 
+app.use('/uploads', express.static('uploads'));
 
 // Iniciar servidor
 app.listen(port, () => {

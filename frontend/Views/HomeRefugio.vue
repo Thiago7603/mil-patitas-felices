@@ -83,33 +83,31 @@
   </template>
   
   <script>
+  import { ref } from 'vue';
+
   export default {
-    name: 'RefugioHome',
-    props: {
-      refugioId: {
-        type: Number,
-        required: true
-      }
-    },
     data() {
       return {
         filter: 'all',
-        animals: [],
-        isLoading: false,
-        error: null
+        animals: ref([]),
+        refugioId: null,
+        isLoading: ref(false),
+        error: ref(null)
       };
     },
     computed: {
       filteredAnimals() {
-        let list = this.animals.filter(a => a.created_by === this.refugioId);
+        let list = this.animals;
         if (this.filter === 'dog') {
-          list = list.filter(a => a.species.toLowerCase() === 'perro');
+          list = list.filter(a => a.species?.toLowerCase() === 'perro');
         } else if (this.filter === 'cat') {
-          list = list.filter(a => a.species.toLowerCase() === 'gato');
+          list = list.filter(a => a.species?.toLowerCase() === 'gato');
+        } else if (this.filter === 'others') {
+          list = list.filter(a => !['perro', 'gato'].includes(a.species?.toLowerCase()));
         }
         return list;
       }
-    },
+  },
     methods: {
       formatSpecies(species) {
         return species.charAt(0).toUpperCase() + species.slice(1).toLowerCase();
@@ -120,18 +118,43 @@
       },
       async fetchAnimals() {
         this.isLoading = true;
-        this.error = null;
         try {
-          const res = await fetch('http://localhost:4000/api/animals');
-          if (!res.ok) throw new Error('Error al obtener datos');
-          const data = await res.json();
+          // Obtén el ID de la URL
+          const refugioId = this.$route.params.id;
+          this.refugioId = refugioId;
+          const token = localStorage.getItem('token'); // Obtener el token
+          const response = await fetch(`http://localhost:4000/api/animals/refugio/${refugioId}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`, // Envía el token
+              'Accept': 'application/json'
+            }
+          });
+
+          console.log('Token usado:', localStorage.getItem('token'));
+          console.log('ID de usuario:', refugioId);
+
+          const contentType = response.headers.get('content-type');
+    
+          if (!contentType || !contentType.includes('application/json')) {
+            const textResponse = await response.text();
+            throw new Error(`Respuesta inesperada: ${textResponse.substring(0, 100)}...`);
+          }
+
+          const data = await response.json();
+          console.log('array', data);
+
+          if (!Array.isArray(data)) {
+            throw new Error('La respuesta no es un array válido');
+          }
+
           this.animals = data.map(animal => ({
             ...animal,
             images: animal.images.map(img => `http://localhost:4000/uploads/${img}`)
           }));
-        } catch (err) {
-          console.error('Error:', err);
-          this.error = 'No pudimos cargar los animales. Por favor intenta más tarde.';
+
+        } catch (error) {
+          console.error("Error:", error);
+          this.error = error.message;
         } finally {
           this.isLoading = false;
         }

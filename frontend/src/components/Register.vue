@@ -47,7 +47,16 @@ export default {
         console.log('✅ Registro exitoso', res.data);
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('user', JSON.stringify(res.data.user));
-        this.$router.push('/');
+        // Redirigir según el rol
+        const userData = res.data.user;
+        if (userData.role === 'adoptante') {
+          this.$router.push('/adopt');
+        } else if (userData.role === 'refugio') {
+          this.$router.push('/home/refugio');
+        } else {
+          // Rol no reconocido
+          this.$router.push('/');
+        }
         
       } catch (err) {
         this.error = err.response?.data?.message || 'Error al registrar';

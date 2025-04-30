@@ -39,8 +39,15 @@ const handleLogin = async () => {
     // Usar el store para guardar el usuario
     auth.login(userData);
 
-    // Redirigir
-    router.push(`/user/profile/${userData.id}`);
+    // Redirigir según el rol
+    if (userData.role === 'adoptante') {
+      router.push('/adopt');
+    } else if (userData.role === 'refugio') {
+      router.push('/home/refugio');
+    } else {
+      // Rol no reconocido
+      router.push('/');
+    }
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Correo o contraseña incorrectos';
     console.error('Error detallado:', err.response);

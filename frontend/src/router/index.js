@@ -20,7 +20,7 @@ const routes = [
       { path: '', component: Home },              
       { path: '/user/login', component: UserLogin },
       { path: '/user/register', component: UserRegister },
-      { path: '/registrar-animal', component: AnimalRegister },
+      { path: '/registrar-animal/:id', component: AnimalRegister },
       { path: '/editar-animal/:id', component: AnimalEdit },
       { path: '/home/refugio/:id', component: HomeRefugio },
       { path: '/user/profile/:id', component: UserPerfil },

@@ -4,7 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const { createAnimal, editAnimal, deleteAnimal } = require('../Controllers/animalController');
 const authMiddleware = require('../middleware/authMiddleware');
-const { getAnimalById, getAnimalsByRefugio } = require('../Controllers/animalController');
+const { getAllAnimals, getAnimalsByRefugio } = require('../Controllers/animalController');
 
 // Configuración para subir imágenes
 const storage = multer.diskStorage({
@@ -17,10 +17,14 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+//Ruta para obtener los animales de un refugio
 router.get('/refugio/:id', authMiddleware,getAnimalsByRefugio);
 
+//Ruta para obtener los animales de todos los refugios en la vista de adopcion
+router.get('/adopt', authMiddleware, getAllAnimals);
+
 // Ruta para registrar nuevo animal
-router.post('/register', upload.array('images', 5), createAnimal);
+router.post('/register/:id', upload.array('images', 5), createAnimal);
 
 // Ruta para editar animal
 router.put('/:id', authMiddleware, upload.array('images', 5), editAnimal);  // Aquí subimos imágenes, si es necesario

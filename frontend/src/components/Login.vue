@@ -43,7 +43,7 @@ const handleLogin = async () => {
     if (userData.role === 'adoptante') {
       router.push('/adopt');
     } else if (userData.role === 'refugio') {
-      router.push('/home/refugio');
+      router.push(`/home/refugio/${userData.id}`);
     } else {
       // Rol no reconocido
       router.push('/');

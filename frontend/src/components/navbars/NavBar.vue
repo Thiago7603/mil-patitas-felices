@@ -13,7 +13,7 @@
           <template v-if="auth.user">
             <template v-if="auth.user.role === 'refugio'">
               <router-link :to="`/home/refugio/${auth.user.id}`" class="nav-link">Casa</router-link>
-              <router-link to="/registrar-animal" class="nav-link">Publicar</router-link>
+              <router-link :to="`/registrar-animal/${auth.user.id}`" class="nav-link">Publicar</router-link>
               <router-link :to="`/user/profile/${auth.user.id}`" class="nav-link">Perfil</router-link>
             </template>
 

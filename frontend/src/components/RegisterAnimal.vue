@@ -9,7 +9,8 @@
     <textarea v-model="form.story" placeholder="Historia"></textarea>
     <textarea v-model="form.adoption_requirements" placeholder="Requisitos de adopción"></textarea>
     <input v-model="form.location" type="text" placeholder="Ubicación" />
-    <input v-model.number="form.created_by" type="number" placeholder="ID del refugio" required />
+    <p>ID del refugio asignado: {{ form.created_by }}</p>
+
 
     <div class="file-upload-group">
       <label for="imageUpload">📷 Imágenes (máx. 5):</label>
@@ -57,7 +58,11 @@ export default {
       });
 
       try {
-        const res = await fetch('http://localhost:4000/api/animals/register', {
+        const refugioId = this.$route.params.id;
+        this.form.created_by = Number(refugioId)
+        console.log('refugio: ',refugioId)
+        console.log('created_by:',this.form.created_by)
+        const res = await fetch(`http://localhost:4000/api/animals/register/${refugioId}`, {
           method: 'POST',
           body: formData
         });

@@ -18,8 +18,8 @@
             </template>
 
             <template v-else-if="auth.user.role === 'adoptante'">
-              <router-link to="/adopt" class="nav-link">Adoptar</router-link>
-              <router-link to="/favorites" class="nav-link">Favoritos</router-link>
+              <router-link :to="`/adopt/${auth.user.id}`" class="nav-link">Adoptar</router-link>
+              <router-link :to="`/favorites/${auth.user.id}`" class="nav-link">Favoritos</router-link>
               <router-link :to="`/user/profile/${auth.user.id}`" class="nav-link">Perfil</router-link>
             </template> 
           </template>

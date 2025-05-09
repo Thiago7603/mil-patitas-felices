@@ -93,6 +93,14 @@
           <p><strong>Ubicación:</strong> {{ selectedAnimal.location }}</p>
           <p><strong>Historia:</strong> {{ selectedAnimal.story }}</p>
           <p><strong>Requisitos de adopción:</strong> {{ selectedAnimal.adoption_requirements }}</p>
+
+           <!-- icono para marcar animal como favorito -->
+          <font-awesome-icon
+            :icon="['fas', 'heart']"
+            class="heart-icon"
+            :style="{ color: heartColor }"
+            @click.stop="toggleFavorite(selectedAnimal.id)"
+          />
         </div>
       </div>
     </div>
@@ -103,8 +111,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
+const userId = route.params.id
 const animals = ref([]) // Lista de animales filtrados
+const favorites = ref([]);
 const isLoading = ref(false)
 const error = ref(null)
 const filters = ref({
@@ -147,7 +159,7 @@ const fetchAnimals = async () => {
   isLoading.value = true;
   try {
     const token = localStorage.getItem('token'); // Obtener el token
-    const response = await fetch('http://localhost:4000/api/animals/adopt', {
+    const response = await axios.get(`http://localhost:4000/api/animals/adopt/${userId}`, {
       headers: {
         'Authorization': `Bearer ${token}`, // Envía el token
         'Accept': 'application/json'
@@ -161,7 +173,7 @@ const fetchAnimals = async () => {
       throw new Error(`Respuesta inesperada: ${textResponse.substring(0, 100)}...`);
     }
 
-    const data = await response.json();
+    const data = response.data
     console.log('Datos recibidos:', data);
 
     if (!Array.isArray(data)) {
@@ -200,6 +212,8 @@ const filteredAnimals = async () => {
     if (filters.value.maxAge !== null && filters.value.maxAge !== '') query.append('maxAge', filters.value.maxAge);
     if (filters.value.size) query.append('size', filters.value.size)
     if (filters.value.location) query.append('location', filters.value.location)
+    if (filters.value.story) query.append('story', filters.value.story)
+    if (filters.value.adoption_requirements) query.append('adoption_requirements', filters.value.adoption_requirements)
 
     // Realiza la solicitud al backend para obtener los animales
     const token = localStorage.getItem('token');
@@ -223,18 +237,60 @@ const filteredAnimals = async () => {
   }
 }
 
-// Abrir modal con los detalles del animal
-function openAnimalDetail(animal) {
-  selectedAnimal.value = animal
-  showModal.value = true
+const fetchFavorites = async () => {
+      if (!userId) return;
+      const res = await axios.get(`/api/favorites/${userId}`);
+      favorites.value = res.data.map(a => a.id);
+      console.log("Respuesta de fetchFavorites:", favorites.value);
+
 }
+
+const isFavorite = (animalId) => {
+  return favorites.value.includes(animalId)
+}
+
+const toggleFavorite = async (animalId) => {
+  console.log('toggleFavorite llamado con ID:', animalId) // ← este debe mostrar el ID correctamente
+
+  try {
+    if (isFavorite(animalId)) {
+      // eliminar de favoritos
+      await axios.delete(`http://localhost:4000/api/favorites`, {
+        data: { userId: userId, animalId }
+      })
+      favorites.value = favorites.value.filter(id => id !== animalId)
+    } else {
+      // agregar a favoritos
+      await axios.post('http://localhost:4000/api/favorites', {
+        userId: userId,
+        animalId
+      })
+      favorites.value.push(animalId)
+    }
+  } catch (error) {
+    console.error('Error al cambiar favorito:', error)
+  }
+}
+
+const heartColor = computed(() => {
+  return favorites.value?.includes(selectedAnimal.value.id) ? 'red' : 'gray';
+});
+
+// Abrir modal con los detalles del animal
+const openAnimalDetail = async (animal) => {
+  selectedAnimal.value = animal;
+  showModal.value = true;
+};
 
 // Cerrar el modal
 function closeModal() {
   showModal.value = false
 }
 
-onMounted(fetchAnimals)
+onMounted(() => {
+  fetchAnimals();
+  fetchFavorites();
+});
 </script>
 
 <style scoped>
@@ -447,6 +503,17 @@ onMounted(fetchAnimals)
 .card-content .label {
   font-weight: 600;
   color: #2c3e50;
+}
+
+.heart-icon {
+  position: absolute;
+  right: 40px;
+  bottom: 210px;
+  width: 32px;
+  height: 32px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 3;
 }
 
 /* Modal */

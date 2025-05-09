@@ -6,6 +6,7 @@ const path = require('path');
 const pool = require('./config/db'); // importamos la conexión
 const authRoutes = require('./routes/auth'); // importamos las rutas
 const animalRoutes = require('./routes/animals'); // importamos las rutas
+const favoritesRoutes = require('./routes/favorites'); // importamos las rutas
 
 const app = express();
 const port = 4000;
@@ -31,6 +32,7 @@ app.get('/api/test', async (req, res) => {
 app.use('/api', authRoutes);
 app.use('/api/animals', animalRoutes); 
 app.use('/uploads', express.static('uploads'));
+app.use('/api/favorites', favoritesRoutes);
 
 // Iniciar servidor
 app.listen(port, () => {

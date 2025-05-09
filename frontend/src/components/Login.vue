@@ -41,7 +41,7 @@ const handleLogin = async () => {
 
     // Redirigir según el rol
     if (userData.role === 'adoptante') {
-      router.push('/adopt');
+      router.push(`/adopt/${userData.id}`);
     } else if (userData.role === 'refugio') {
       router.push(`/home/refugio/${userData.id}`);
     } else {

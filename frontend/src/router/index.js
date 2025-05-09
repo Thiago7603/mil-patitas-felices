@@ -8,6 +8,7 @@ import AnimalEdit from '../../Views/AnimalEdit.vue'
 import HomeRefugio from '../../Views/HomeRefugio.vue'
 import UserPerfil from '../../Views/UserPerfil.vue'
 import Adopt from '../../Views/Adopt.vue'
+import Favorites from '../../Views/Favorites.vue'
 
 // Layout
 import MainLayout from '../layout/MainLayout.vue'
@@ -24,7 +25,8 @@ const routes = [
       { path: '/editar-animal/:id', component: AnimalEdit },
       { path: '/home/refugio/:id', component: HomeRefugio },
       { path: '/user/profile/:id', component: UserPerfil },
-      { path: '/adopt', component: Adopt },    
+      { path: '/adopt/:id', component: Adopt },
+      { path: '/favorites/:id', component: Favorites },        
     ]
   },
 ]

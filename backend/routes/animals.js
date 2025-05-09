@@ -21,7 +21,7 @@ const upload = multer({ storage });
 router.get('/refugio/:id', authMiddleware,getAnimalsByRefugio);
 
 //Ruta para obtener los animales de todos los refugios en la vista de adopcion
-router.get('/adopt', authMiddleware, getAllAnimals);
+router.get('/adopt/:id', authMiddleware, getAllAnimals);
 
 // Ruta para registrar nuevo animal
 router.post('/register/:id', upload.array('images', 5), createAnimal);

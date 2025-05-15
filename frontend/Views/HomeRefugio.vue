@@ -79,6 +79,20 @@
           <p>No hay animales disponibles con los filtros seleccionados</p>
         </div>
       </div>
+
+      <!-- Modal -->
+    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-content">
+        <button class="modal-close" @click="closeModal">×</button>
+        <h2>{{ selectedAnimal.name }}</h2>
+        <img :src="selectedAnimal.images[0]" :alt="`Foto de ${selectedAnimal.name}`" class="modal-image" />
+        <p><strong>Edad:</strong> {{ selectedAnimal.age }} años</p>
+        <p><strong>Especie:</strong> {{ formatSpecies(selectedAnimal.species) }}</p>
+        <p><strong>Estado:</strong> {{ selectedAnimal.status || 'Disponible' }}</p>
+        <p><strong>Descripción:</strong> {{ selectedAnimal.description || 'Sin descripción' }}</p>
+      </div>
+    </div>
+
     </div>
   </template>
   
@@ -92,7 +106,9 @@
         animals: ref([]),
         refugioId: null,
         isLoading: ref(false),
-        error: ref(null)
+        error: ref(null),
+        showModal: false,
+        selectedAnimal: null
       };
     },
     computed: {
@@ -113,8 +129,12 @@
         return species.charAt(0).toUpperCase() + species.slice(1).toLowerCase();
       },
       openAnimalModal(animal) {
-        // Implementar lógica para abrir modal con detalles del animal
-        console.log('Mostrar detalles de:', animal);
+      this.selectedAnimal = animal;
+      this.showModal = true;
+      },
+      closeModal() {
+        this.showModal = false;
+        this.selectedAnimal = null;
       },
       async fetchAnimals() {
         this.isLoading = true;
@@ -167,243 +187,196 @@
   </script>
   
   <style scoped>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
-  
-  :root {
-    --primary-color: #2E7D32;
-    --primary-light: #4CAF50;
-    --primary-dark: #1B5E20;
-    --secondary-color: #FF9800;
-    --text-color: #333;
-    --text-light: #666;
-    --bg-light: #f9f9f9;
-    --white: #ffffff;
-    --gray-light: #e0e0e0;
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-    --transition: all 0.3s ease;
-  }
-  
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .refugio-home {
-    font-family: 'Poppins', sans-serif;
-    color: var(--text-color);
-    line-height: 1.6;
-  }
-  
-  .hero-section {
-    background: linear-gradient(rgba(46, 125, 50, 0.427), rgba(46, 125, 50, 0.619)), 
-                url('https://thumbs.dreamstime.com/b/muchos-animales-dom%C3%A9sticos-87694876.jpg');
-    background-size: cover;
-    background-position: center;
-    padding: 5rem 1rem;
-    text-align: center;
-    color: #ffffff;
-    margin-bottom: 2rem;
-  }
-  
-  .hero-content {
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .hero-title {
-    font-size: 2.5rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-  }
-  
-  .hero-text {
-    font-size: 1.1rem;
-    font-weight: 300;
-    margin-bottom: 1.5rem;
-    opacity: 0.9;
-  }
-  
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
-  
-  .filter-section {
-    margin-bottom: 2.5rem;
-  }
-  
-  .filter-buttons {
-    display: flex;
-    gap: 1rem;
-    padding-bottom: 0.5rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    white-space: nowrap;
-  }
-  
-  .filter-buttons::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .filter-btn {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 50px;
-    background-color: var(--gray-light);
-    color: var(--text-color);
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-shrink: 0;
-  }
-  
-  .filter-btn:hover {
-    background-color: #d0d0d0;
-    transform: translateY(-2px);
-  }
-  
-  .filter-btn.active {
-    background-color: var(--primary-color);
-    color: var(--white);
-    box-shadow: var(--shadow-sm);
-  }
-  
-  .animal-gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-  }
-  
-  .animal-card {
-    background: var(--white);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    cursor: pointer;
-  }
-  
-  .animal-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
-  }
-  
-  .card-image-container {
-    position: relative;
-    height: 220px;
-    overflow: hidden;
-  }
-  
-  .animal-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-  }
-  
-  .animal-card:hover .animal-image {
-    transform: scale(1.05);
-  }
-  
-  .card-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 1rem;
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  .status-badge {
-    background-color: var(--primary-light);
-    color: var(--white);
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 0.25rem 0.75rem;
-    border-radius: 50px;
-  }
-  
-  .card-body {
-    padding: 1.25rem;
-    text-align: left;
-  }
-  
-  .animal-name {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
-  }
-  
-  .animal-meta {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    color: var(--text-light);
-  }
-  
-  .view-details-btn {
-    width: 100%;
-    padding: 0.5rem;
-    background-color: transparent;
-    border: 1px solid var(--primary-color);
-    color: var(--primary-color);
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-  }
-  
-  .view-details-btn:hover {
-    background-color: var(--primary-color);
-    color: var(--white);
-  }
-  
-  .empty-state {
-    text-align: center;
-    padding: 3rem;
-    color: var(--text-light);
-  }
-  
-  .empty-state i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    color: var(--gray-light);
-  }
-  
-  @media (max-width: 768px) {
-    .hero-title {
-      font-size: 2rem;
-    }
-    
-    .hero-text {
-      font-size: 1rem;
-    }
-    
-    .animal-gallery {
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .hero-section {
-      padding: 3rem 1rem;
-    }
-    
-    .hero-title {
-      font-size: 1.75rem;
-    }
-  }
-  </style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
+.refugio-home {
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+}
+
+.hero-section {
+  background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+    url('https://thumbs.dreamstime.com/b/muchos-animales-dom%C3%A9sticos-87694876.jpg') center/cover no-repeat;
+  color: white;
+  padding: 4rem 1rem;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.hero-text {
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.filter-section {
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: nowrap;
+}
+
+.filter-btn {
+  padding: 0.7rem 1.2rem;
+  border-radius: 30px;
+  border: none;
+  background-color: #e0e0e0;
+  color: #333;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+  background-color: #2E7D32;
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.animal-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.animal-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.animal-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-image-container {
+  position: relative;
+  height: 220px;
+}
+
+.animal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.status-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #2E7D32;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+.card-body {
+  padding: 1rem;
+  text-align: center;
+}
+
+.animal-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.animal-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.view-details-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.view-details-btn:hover {
+  background-color: #388e3c;
+}
+
+.empty-state {
+  text-align: center;
+  color: #777;
+  margin-top: 3rem;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 1.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>

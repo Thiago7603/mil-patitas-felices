@@ -27,6 +27,8 @@ const routes = [
       { path: '/user/profile/:id', component: UserPerfil },
       { path: '/adopt/:id', component: Adopt },
       { path: '/favorites/:id', component: Favorites },        
+      { path: '/mensajes/:id', name: 'Mensajes', component: () => import('../../Views/MessagesView.vue')
+    }
     ]
   },
 ]

@@ -2,12 +2,15 @@ const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
+  console.log('Authorization header:', authHeader);
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('No hay token o no comienza con Bearer');
     return res.status(401).json({ message: 'Autenticación requerida' });
   }
 
   const token = authHeader.split(' ')[1];
+  console.log('Token extraído:', token);
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secreto');

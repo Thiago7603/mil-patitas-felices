@@ -7,6 +7,8 @@ const pool = require('./config/db'); // importamos la conexión
 const authRoutes = require('./routes/auth'); // importamos las rutas
 const animalRoutes = require('./routes/animals'); // importamos las rutas
 const favoritesRoutes = require('./routes/favorites'); // importamos las rutas
+const messagesRoutes = require('./routes/messages');
+const adoptionRoutes = require('./routes/adoption');
 
 const app = express();
 const port = 4000;
@@ -33,6 +35,8 @@ app.use('/api', authRoutes);
 app.use('/api/animals', animalRoutes); 
 app.use('/uploads', express.static('uploads'));
 app.use('/api/favorites', favoritesRoutes);
+app.use('/api/messages', messagesRoutes);
+app.use('/api/adoption', adoptionRoutes);
 
 // Iniciar servidor
 app.listen(port, () => {

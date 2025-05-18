@@ -9,6 +9,8 @@ const animalRoutes = require('./routes/animals'); // importamos las rutas
 const favoritesRoutes = require('./routes/favorites'); // importamos las rutas
 const messagesRoutes = require('./routes/messages');
 const adoptionRoutes = require('./routes/adoption');
+const requestRoutes = require('./routes/request');
+const notificationRoutes = require('./routes/notification');
 
 const app = express();
 const port = 4000;
@@ -37,6 +39,8 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/favorites', favoritesRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/adoption', adoptionRoutes);
+app.use('/api/requests', requestRoutes);
+app.use('/api', notificationRoutes);
 
 // Iniciar servidor
 app.listen(port, () => {

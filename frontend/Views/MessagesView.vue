@@ -50,7 +50,6 @@ const userId = parseInt(route.params.id); // ID del adoptante
 const receiverId = 2; // Supuesto ID del refugio (ajústalo si es dinámico)
 
 const messages = ref([]);
-const newMessage = ref('');
 const conversationStarted = ref(false);
 const userAnimals = ref([]);
 

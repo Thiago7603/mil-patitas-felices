@@ -14,7 +14,7 @@
               <router-link :to="`/home/refugio/${auth.user.id}`" class="nav-link">Casa</router-link>
               <router-link :to="`/registrar-animal/${auth.user.id}`" class="nav-link">Publicar</router-link>
               <router-link :to="`/user/profile/${auth.user.id}`" class="nav-link">Perfil</router-link>
-              <router-link :to="`/mensajes/${auth.user.id}`" class="nav-link">Mensajes</router-link> <!-- nuevo -->
+              <router-link :to="`/requests/${auth.user.id}`" class="nav-link">Solicitudes</router-link> <!-- nuevo -->
             </template>
 
             <template v-else-if="auth.user.role === 'adoptante'">
@@ -22,6 +22,7 @@
               <router-link :to="`/favorites/${auth.user.id}`" class="nav-link">Favoritos</router-link>
               <router-link :to="`/user/profile/${auth.user.id}`" class="nav-link">Perfil</router-link>
               <router-link :to="`/mensajes/${auth.user.id}`" class="nav-link">Mensajes</router-link> <!-- nuevo -->
+              <router-link :to="`/notification/${auth.user.id}`" class="nav-link">Notificaciones</router-link>
             </template> 
           </template>
         </nav>

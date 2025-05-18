@@ -72,6 +72,7 @@ const createAnimal = async (req, res) => {
   const getAnimalsByRefugio = async (req, res) => {
     const refugioId = req.params.id; // ID del refugio (usuario creador)
 
+
     try {
       // 1. Obtener todos los animales del refugio
       const animalsResult = await pool.query(
@@ -116,6 +117,7 @@ const getAnimalById = async (req, res) => {
     res.status(500).json({ message: 'Error al obtener los datos del animal' });
   }
 };
+
 // Obtener todos los animales con filtros
 const getAllAnimals = async (req, res) => {
   try {
@@ -127,6 +129,9 @@ const getAllAnimals = async (req, res) => {
     
     const queryParams = [];
     const conditions = [];
+
+    // Agregar condición para no mostrar animales adoptados
+    conditions.push(`a.adopted = false`);
 
     // Filtrar por especie
     if (req.query.species) {
@@ -180,6 +185,7 @@ const getAllAnimals = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener animales' });
   }
 };
+
 
   
 // Editar animal

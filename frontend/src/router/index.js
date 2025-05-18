@@ -9,6 +9,9 @@ import HomeRefugio from '../../Views/HomeRefugio.vue'
 import UserPerfil from '../../Views/UserPerfil.vue'
 import Adopt from '../../Views/Adopt.vue'
 import Favorites from '../../Views/Favorites.vue'
+import Messages from '../../Views/MessagesView.vue'
+import Request from '../../Views/AdoptRequest.vue'
+import Notification from '../../Views/NotificationView.vue'
 
 // Layout
 import MainLayout from '../layout/MainLayout.vue'
@@ -27,8 +30,9 @@ const routes = [
       { path: '/user/profile/:id', component: UserPerfil },
       { path: '/adopt/:id', component: Adopt },
       { path: '/favorites/:id', component: Favorites },        
-      { path: '/mensajes/:id', name: 'Mensajes', component: () => import('../../Views/MessagesView.vue')
-    }
+      { path: '/mensajes/:id', component: Messages},
+      { path: '/requests/:id', component: Request},
+      { path: '/notification/:id', component: Notification},
     ]
   },
 ]

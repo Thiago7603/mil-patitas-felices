@@ -70,6 +70,12 @@
                 <span class="animal-age">{{ animal.age }} años</span>
               </div>
               <button class="view-details-btn">Ver detalles</button>
+              <button
+                class="edit-animal-btn"
+                @click.stop="goToEditAnimal(animal.id)"
+              >
+                Editar
+              </button>
             </div>
           </div>
         </div>
@@ -108,7 +114,7 @@
         isLoading: ref(false),
         error: ref(null),
         showModal: false,
-        selectedAnimal: null
+        selectedAnimal: null,
       };
     },
     computed: {
@@ -178,6 +184,9 @@
         } finally {
           this.isLoading = false;
         }
+      },
+      goToEditAnimal (animalId) {
+        this.$router.push(`/editar-animal/${animalId}`);
       }
     },
     async mounted() {
@@ -326,6 +335,23 @@
 
 .view-details-btn:hover {
   background-color: #388e3c;
+}
+
+.edit-animal-btn {
+  background-color: #075aff; /* Un color amarillo/ámbar para editar */
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.3s;
+  margin-left: 10px;
+}
+
+.edit-animal-btn:hover {
+  background-color: #0004e0;
 }
 
 .empty-state {

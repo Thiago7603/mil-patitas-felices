@@ -101,11 +101,12 @@
     },
     mounted() {
       this.fetchAnimal();
+      console.log('ID del animal recibido:', this.animalId);
     },
     methods: {
       async fetchAnimal() {
         try {
-          const response = await axios.get(`/api/animals/${this.animalId}`);
+          const response = await axios.get(`http://localhost:4000/api/animals/${this.animalId}`);
           this.form = response.data;
           if (response.data.images) {
             this.imagePreviews = response.data.images;

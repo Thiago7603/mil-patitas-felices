@@ -1,22 +1,71 @@
 <template>
-  <form @submit.prevent="handleSubmit" enctype="multipart/form-data" class="form">
-    <input v-model="form.name" type="text" placeholder="Nombre" required />
-    <input v-model="form.species" type="text" placeholder="Especie" />
-    <input v-model="form.gender" type="text" placeholder="Género" />
-    <input v-model.number="form.age" type="number" placeholder="Edad" />
-    <input v-model="form.size" type="text" placeholder="Tamaño" />
-    <textarea v-model="form.health_status" placeholder="Estado de salud"></textarea>
-    <textarea v-model="form.story" placeholder="Historia"></textarea>
-    <textarea v-model="form.adoption_requirements" placeholder="Requisitos de adopción"></textarea>
-    <input v-model="form.location" type="text" placeholder="Ubicación" />
-    <p>ID del refugio asignado: {{ form.created_by }}</p>
-
-
-    <div class="file-upload-group">
-      <label for="imageUpload">📷 Imágenes (máx. 5):</label>
-      <input id="imageUpload" class="file-input" type="file" multiple accept="image/*" @change="handleFileChange" />
+  <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
+    <div>
+      <label>Nombre:</label>
+      <input v-model="form.name" type="text" required />
     </div>
-
+    <div>
+      <label>Especie:</label>
+      <select v-model="form.gender">
+          <option value="perro">Perro</option>
+          <option value="gato">Gato</option>
+      </select>
+    </div>
+    <div>
+      <label>Género:</label>
+      <select v-model="form.gender" required>
+        <option value="Macho">Macho</option>
+        <option value="Hembra">Hembra</option>
+      </select>
+    </div>
+    <div>
+      <label>Edad:</label>
+      <input v-model="form.age" type="text" required />
+    </div>
+    <div>
+      <label>Tamaño:</label>
+      <select v-model="form.size" required>
+        <option value="Pequeño">Pequeño</option>
+        <option value="Mediano">Mediano</option>
+        <option value="Grande">Grande</option>
+      </select>
+    </div>
+    <div>
+      <label>Salud:</label>
+      <textarea v-model="form.health_status" required></textarea>
+    </div>
+    <div>
+      <label>Historia:</label>
+      <textarea v-model="form.story" required></textarea>
+    </div>
+    <div>
+      <label>Requisitos de adopción:</label>
+      <textarea v-model="form.adoption_requirements" required></textarea>
+    </div>
+    <div>
+      <label>Ubicación:</label>
+      <input v-model="form.location" type="text" required />
+    </div>
+    <p>ID del refugio asignado: {{ form.created_by }}</p>
+    <div>
+      <label>Imágenes (Máx. 5):</label>
+      <input 
+        type="file" 
+        multiple 
+        accept="image/*" 
+        @change="handleFileChange"
+        ref="fileInput"
+        :key="fileInputKey" 
+      />
+      <div v-if="imagePreviews.length" class="image-previews">
+        <div v-for="(preview, index) in imagePreviews" :key="index" class="preview-item">
+          <img :src="preview" alt="Vista previa de imagen" />
+        </div>
+        <button type="button" class="remove-image-button" @click="removeImage(index)">
+          Eliminar
+        </button>
+      </div>
+    </div>
 
     <button type="submit">Registrar</button>
     <p>{{ message }}</p>
@@ -24,6 +73,7 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 export default {
   name: 'RegisterAnimalForm',
   data() {
@@ -38,23 +88,52 @@ export default {
         story: '',
         adoption_requirements: '',
         location: '',
-        created_by: null
+        created_by: null,
+        fileInputKey: Date.now()
       },
       images: [],
-      message: ''
+      imagePreviews: [],
+      message: '',
+      errorMessage: '',
+      fileInput: ref(null),
     };
   },
   methods: {
-    handleFileChange(event) {
-      this.images = Array.from(event.target.files).slice(0, 5);
+      handleFileChange(event) {
+        this.images = Array.from(event.target.files);
+        this.imagePreviews = [];
+        
+        // Limitar a 5 imágenes
+        if (this.images.length > 5) {
+          this.images = this.images.slice(0, 5);
+          this.errorMessage = 'Solo puedes subir un máximo de 5 imágenes';
+        } else {
+          this.errorMessage = '';
+        }
+        
+        // Generar vistas previas
+        this.images.forEach(file => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.imagePreviews.push(e.target.result);
+          };
+          reader.readAsDataURL(file);
+        });
+      },
+      removeImage(index) {
+        // Elimina la imagen del array de archivos
+        this.images.splice(index, 1);
+        // Elimina la vista previa
+        this.imagePreviews.splice(index, 1);
+        this.fileInputKey = Date.now();
     },
     async handleSubmit() {
       const formData = new FormData();
       for (const key in this.form) {
         formData.append(key, this.form[key]);
       }
-      this.images.forEach((image) => {
-        formData.append('images', image);
+      this.images.forEach((file) => {
+        formData.append('images', file);
       });
 
       try {
@@ -94,7 +173,20 @@ export default {
   padding: 20px;
 }
 
+div {
+  display:grid;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+label {
+  width: 150px;
+  margin-right: 15px;
+  text-align: left;
+}
+
 input, textarea, select {
+  flex-grow: 1;
   width: 100%;
   padding: 12px 14px;
   margin-bottom: 15px;
@@ -164,5 +256,59 @@ p {
   outline: none;
 }
 
-</style>
+.image-previews {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  overflow-x: auto;
+}
 
+.preview-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.preview-item {
+  width: 300px;
+  height: 300px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden; /* Recorta la imagen si excede el contenedor */
+  margin-bottom: 5px;
+}
+
+.preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+
+.remove-image-button {
+  padding: 8px 12px;
+  background-color: #f44336;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100px;
+  box-sizing: border-box;
+}
+
+.remove-image-button:hover {
+  background-color: #e53935;
+}
+
+</style>

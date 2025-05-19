@@ -36,7 +36,7 @@ export default {
 }
 
 .profile-hero {
-  background: linear-gradient(135deg, rgba(6, 164, 58, 0.8) 0%, rgba(208, 208, 208, 0.759) 100%);
+  background: linear-gradient(135deg, rgba(104, 104, 104, 0.8) 0%, rgba(208, 208, 208, 0.759) 100%);
   padding: 4rem 2rem;
   text-align: center;
   color: white;

@@ -48,23 +48,30 @@
     </div>
     <p>ID del refugio asignado: {{ form.created_by }}</p>
     <div>
-      <label>Imágenes (Máx. 5):</label>
-      <input 
-        type="file" 
-        multiple 
-        accept="image/*" 
-        @change="handleFileChange"
-        ref="fileInput"
-        :key="fileInputKey" 
-      />
+      <label>Imágenes:</label>
+      <label class="clean-file-button">
+        <input 
+          type="file" 
+          multiple 
+          accept="image/*" 
+          @change="handleFileChange"
+          ref="fileInput"
+          :key="fileInputKey"
+        />
+        <span>Seleccionar la imagen</span>
+      </label>
+      <span v-if="images.length > 0" class="file-counter">{{ images.length }} archivo(s)</span>
+      
+      <!-- Vista previa de imágenes (se mantiene igual) -->
       <div v-if="imagePreviews.length" class="image-previews">
         <div v-for="(preview, index) in imagePreviews" :key="index" class="preview-item">
           <img :src="preview" alt="Vista previa de imagen" />
+          <button type="button" class="remove-image-button" @click="removeImage(index)">
+            Eliminar
+          </button>
         </div>
-        <button type="button" class="remove-image-button" @click="removeImage(index)">
-          Eliminar
-        </button>
       </div>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
 
     <button type="submit">Registrar</button>
@@ -200,9 +207,113 @@ input, textarea, select {
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: #42b883;
-  box-shadow: 0 0 4px rgba(76, 175, 80, 0.5);
+  border-color: #027441;
+  box-shadow: 0 0 4px #027441a5;
   outline: none;
+}
+
+form {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+}
+
+div {
+  display: grid;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+label {
+  width: 150px;
+  margin-right: 15px;
+  text-align: left;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+button[type="submit"] {
+  padding: 12px;
+  background-color: #027441;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Estilos para el botón de archivos */
+.clean-file-button {
+  display: inline-block;
+  padding: 10px 15px;
+  background: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clean-file-button:hover {
+  background: #e0e0e0;
+  border-color: #ccc;
+}
+
+.clean-file-button input[type="file"] {
+  display: none;
+}
+
+.file-counter {
+  margin-left: 10px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+/* Estilos para las vistas previas */
+.image-previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.preview-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.preview-item img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.remove-image-button {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 10px;
+  background-color: rgba(244, 67, 54, 0.9);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 14px;
 }
 
 button {
@@ -219,7 +330,7 @@ button {
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #027441bc;
 }
 
 p {

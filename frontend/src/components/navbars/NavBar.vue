@@ -179,7 +179,7 @@ const handleLogout = () => {
   box-shadow: 0 4px 6px rgba(66, 184, 131, 0.3);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1070px) {
   .menu-toggle {
     display: flex;
   }

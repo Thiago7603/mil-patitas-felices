@@ -2,50 +2,67 @@
   <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
     <div>
       <label>Nombre:</label>
-      <input v-model="form.name" type="text" required />
+      <input v-model="form.name" type="text" :class="{ 'input-error': errors.name }" />
+      <p v-if="errors.name" class="error-text">{{ errors.name }}</p>
     </div>
     <div>
       <label>Especie:</label>
-      <select v-model="form.gender">
+      <select v-model="form.species" :class="{ 'input-error': errors.species }">
           <option value="perro">Perro</option>
           <option value="gato">Gato</option>
           <option value="otro">Otro</option>
       </select>
+      <p v-if="errors.species" class="error-text">{{ errors.species }}</p>
     </div>
     <div>
       <label>Género:</label>
-      <select v-model="form.gender" required>
+      <select v-model="form.gender" :class="{ 'input-error': errors.gender }">
         <option value="Macho">Macho</option>
         <option value="Hembra">Hembra</option>
       </select>
+      <p v-if="errors.gender" class="error-text">{{ errors.gender }}</p>
     </div>
     <div>
       <label>Edad:</label>
-      <input v-model="form.age" type="text" required />
+      <input v-model="form.age" type="text" :class="{ 'input-error': errors.age }" />
+      <p v-if="errors.age" class="error-text">{{ errors.age }}</p>
     </div>
     <div>
       <label>Tamaño:</label>
-      <select v-model="form.size" required>
+      <select v-model="form.size" :class="{ 'input-error': errors.size }">
         <option value="Pequeño">Pequeño</option>
         <option value="Mediano">Mediano</option>
         <option value="Grande">Grande</option>
       </select>
+      <p v-if="errors.size" class="error-text">{{ errors.size }}</p>
     </div>
     <div>
       <label>Salud:</label>
-      <textarea v-model="form.health_status" required></textarea>
+      <textarea v-model="form.health_status"  :class="{ 'input-error': errors.health_status }"></textarea>
     </div>
     <div>
       <label>Historia:</label>
-      <textarea v-model="form.story" required></textarea>
+      <textarea v-model="form.story" :class="{ 'input-error': errors.story }"></textarea>
+      <p v-if="errors.story" class="error-text">{{ errors.story }}</p>
     </div>
     <div>
       <label>Requisitos de adopción:</label>
-      <textarea v-model="form.adoption_requirements" required></textarea>
+      <textarea v-model="form.adoption_requirements" :class="{ 'input-error': errors.adoption_requirements }"></textarea>
+      <p v-if="errors.adoption_requirements" class="error-text">{{ errors.adoption_requirements }}</p>
     </div>
     <div>
       <label>Ubicación:</label>
-      <input v-model="form.location" type="text" required />
+      <select v-model="selectedLocationOption" :class="{ 'input-error': errors.locationOption }" >
+        <option value="Cali - Colombia">Cali - Colombia</option>
+        <option value="Otro">Otro</option>
+      </select>
+      <p v-if="errors.locationOption" class="error-text">{{ errors.locationOption }}</p>  
+    </div>
+
+    <div v-if="selectedLocationOption === 'Otro'">
+      <label>Escribe la ciudad:</label>
+      <input v-model="form.location" type="text" :class="{ 'input-error': errors.location }" />
+      <p v-if="errors.location" class="error-text">{{ errors.location }}</p>
     </div>
     <p>ID del refugio asignado: {{ form.created_by }}</p>
     <div>
@@ -57,12 +74,13 @@
           accept="image/*" 
           @change="handleFileChange"
           ref="fileInput"
-          :key="fileInputKey"
+          :class="{ 'input-error': errors.images }"
         />
         <span>Seleccionar la imagen</span>
       </label>
       <span v-if="images.length > 0" class="file-counter">{{ images.length }} archivo(s)</span>
-      
+      <p v-if="errors.images" class="error-text">{{ errors.images }}</p>
+      <p v-if="errorMessage" class="error-text">{{ errorMessage }}</p>
       <!-- Vista previa de imágenes (se mantiene igual) -->
       <div v-if="imagePreviews.length" class="image-previews">
         <div v-for="(preview, index) in imagePreviews" :key="index" class="preview-item">
@@ -97,14 +115,29 @@ export default {
         adoption_requirements: '',
         location: '',
         created_by: null,
-        fileInputKey: Date.now()
       },
+      selectedLocationOption: '',
       images: [],
       imagePreviews: [],
       message: '',
       errorMessage: '',
+      errors: {},
       fileInput: ref(null),
     };
+  },
+  watch: {
+    // Escucha cambios en selectedLocationOption
+    selectedLocationOption(newVal) {
+      if (newVal === 'Cali - Colombia') {
+        this.form.location = 'Cali - Colombia';
+        this.errors.location = ''; // Limpiar error si había uno en el input de texto
+      } else if (newVal === 'Otro') {
+        this.form.location = ''; // Limpiar el campo de texto cuando se selecciona "Otro"
+      } else {
+        this.form.location = ''; // Limpiar si no se selecciona nada
+      }
+      this.errors.locationOption = ''; // Limpiar el error del select de opción de ubicación
+    }
   },
   methods: {
       handleFileChange(event) {
@@ -135,7 +168,56 @@ export default {
         this.imagePreviews.splice(index, 1);
         this.fileInputKey = Date.now();
     },
+     validateForm() {
+      this.errors = {}; // Limpiar errores anteriores
+      let isValid = true;
+
+      // Validar campos de texto y select
+      const requiredFields = [
+        'name', 'species', 'gender', 'age', 'size',
+        'health_status', 'story', 'adoption_requirements'
+      ];
+
+      requiredFields.forEach(field => {
+        // Para 'age', null se considera vacío. Para strings, un string vacío.
+        if (this.form[field] === '' || this.form[field] === null) {
+          this.errors[field] = `El campo ${field.replace(/_/g, ' ')} es obligatorio.`;
+          isValid = false;
+        }
+      });
+
+      // Validar edad específica (número positivo)
+      if (this.form.age !== null && (isNaN(this.form.age) || this.form.age < 0)) {
+        this.errors.age = 'La edad debe ser un número positivo.';
+        isValid = false;
+      }
+
+      if (this.selectedLocationOption === '') {
+        this.errors.locationOption = 'Debes seleccionar una opción de ubicación.';
+        isValid = false;
+      } else if (this.selectedLocationOption === 'Otro') {
+        if (this.form.location === '') {
+          this.errors.location = 'Por favor, escribe la ciudad.';
+          isValid = false;
+        }
+      }
+      // ----------------------------------------
+
+      if (this.images.length === 0) {
+        this.errors.images = 'Por favor, sube una imagen.';
+        isValid = false;
+      }
+      return isValid;
+    },
     async handleSubmit() {
+      this.message = '';
+      this.errorMessage = '';
+
+      // 1. Ejecutar validación
+      if (!this.validateForm()) {
+        this.message = '❌ Por favor, completa todos los campos requeridos.';
+        return; // Detener el envío si la validación falla
+      }
       const formData = new FormData();
       for (const key in this.form) {
         formData.append(key, this.form[key]);
@@ -157,6 +239,7 @@ export default {
         if (res.ok) {
           this.message = `✅ Animal registrado con ID: ${data.animalId}`;
           this.resetForm();
+          this.errors = {};
         } else {
           this.message = `❌ Error: ${data.error || 'No se pudo registrar'}`;
         }
@@ -289,6 +372,30 @@ button[type="submit"] {
 .error-message {
   color: #f44336;
   font-size: 14px;
+}
+
+.input-error {
+  border-color: #f44336 !important; /* Rojo para el borde del input con error */
+  box-shadow: 0 0 4px rgba(244, 67, 54, 0.5) !important;
+}
+
+.error-text {
+  color: #f44336;
+  font-size: 0.85em;
+  margin-top: 2px;
+  margin-bottom: 5px;
+  text-align: left;
+  font-weight: bold;
+}
+
+.form-message {
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+.form-message.error {
+    color: #f44336;
 }
 
 button {

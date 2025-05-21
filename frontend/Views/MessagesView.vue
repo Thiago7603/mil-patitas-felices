@@ -115,7 +115,7 @@ const startConversation = () => {
 const quieroAdoptar = async () => {
   try {
     const token = localStorage.getItem('token');
-    const res = await axios.get(`http://localhost:4000/api/animals/adopt/${userId}`, {
+    const res = await axios.get(`http://localhost:4000/api/animals/adopt`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     

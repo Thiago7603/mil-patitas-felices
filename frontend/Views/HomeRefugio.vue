@@ -84,7 +84,7 @@
               <button class="view-details-btn">Ver detalles</button>
               <button
                 class="edit-animal-btn"
-                @click.stop="goToEditAnimal(animal.id)"
+                @click.stop="goToEditAnimal(animal.id, refugioId)"
               >
                 Editar
               </button>
@@ -122,7 +122,7 @@
       return {
         filter: 'all',
         animals: ref([]),
-        refugioId: null,
+        refugioId: ref(null),
         isLoading: ref(false),
         error: ref(null),
         showModal: false,
@@ -203,8 +203,8 @@
           this.isLoading = false;
         }
       },
-      goToEditAnimal (animalId) {
-        this.$router.push(`/editar-animal/${animalId}`);
+      goToEditAnimal (animalId, refugioId) {
+        this.$router.push(`/editar-animal/${animalId}/${refugioId}`);
       }
     },
     async mounted() {

@@ -48,7 +48,8 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
-    const animalId = route.params.id;
+    const animalId = route.params.animalId;
+    const refugioId = route.params.refugioId; 
     
     const isDeleting = ref(false);
     const showDeleteModal = ref(false);
@@ -80,7 +81,7 @@ export default {
         );
 
         if (response.data.success) {
-          router.push('/registrar-animal');
+          router.push(`/home/refugio/${refugioId}`);
         }
       } catch (error) {
         console.error('Error al eliminar:', error);
@@ -102,6 +103,7 @@ export default {
 
     return {
       animalId,
+      refugioId,
       isDeleting,
       showDeleteModal,
       deleteError,

@@ -25,7 +25,7 @@ const routes = [
       { path: '/user/login', component: UserLogin },
       { path: '/user/register', component: UserRegister },
       { path: '/registrar-animal/:id', component: AnimalRegister },
-      { path: '/editar-animal/:id', component: AnimalEdit },
+      { path: '/editar-animal/:animalId/:refugioId', component: AnimalEdit },
       { path: '/home/refugio/:id', component: HomeRefugio },
       { path: '/user/profile/:id', component: UserPerfil },
       { path: '/adopt/:id', component: Adopt },

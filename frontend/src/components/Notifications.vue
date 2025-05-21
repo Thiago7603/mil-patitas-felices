@@ -33,8 +33,8 @@
             <p v-if="note.animal_name"><strong>Animal:</strong> {{ note.animal_name }}</p>
             <span class="timestamp">{{ formatDate(note.created_at) }}</span>
           </div>
-          <button v-if="!note.read" @click="markAsRead(note.id)" 
-                  class="mark-read-btn" title="Marcar como leída">
+          <button v-if="!note.read" @click="deleteNotification(note.id)" 
+                  class="mark-read-btn" title="Eliminar notificación">
             <i class="fas fa-check"></i>
           </button>
         </li>
@@ -65,15 +65,15 @@ export default {
     async fetchNotifications() {
       this.loading = true;
       this.error = null;
-      
+
       try {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('No hay token de autenticación');
-        
+
         const response = await axios.get('http://localhost:4000/api/notifications', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        
+
         this.notifications = response.data;
       } catch (error) {
         console.error('Error al obtener notificaciones:', error);
@@ -83,20 +83,16 @@ export default {
       }
     },
 
-    async markAsRead(id) {
+    async deleteNotification(id) {
       try {
         const token = localStorage.getItem('token');
-        await axios.patch(
-          `http://localhost:4000/api/notifications/${id}/read`,
-          {},
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        
-        this.notifications = this.notifications.map(note => 
-          note.id === id ? { ...note, read: true } : note
-        );
+        await axios.delete(`http://localhost:4000/api/notifications/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        // Actualizar la lista local removiendo la notificación eliminada
+        this.notifications = this.notifications.filter(note => note.id !== id);
       } catch (error) {
-        console.error('Error al marcar como leída:', error);
+        console.error('Error al eliminar notificación:', error);
       }
     },
 
@@ -116,6 +112,7 @@ export default {
   }
 };
 </script>
+
 
 <style scoped>
 /* Estilos base */

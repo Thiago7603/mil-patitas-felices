@@ -9,6 +9,7 @@
       <select v-model="form.gender">
           <option value="perro">Perro</option>
           <option value="gato">Gato</option>
+          <option value="otro">Otro</option>
       </select>
     </div>
     <div>
@@ -212,32 +213,6 @@ select:focus {
   outline: none;
 }
 
-form {
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
-}
-
-div {
-  display: grid;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-label {
-  width: 150px;
-  margin-right: 15px;
-  text-align: left;
-}
-
-input, textarea, select {
-  width: 100%;
-  padding: 12px 14px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  font-size: 14px;
-}
 
 button[type="submit"] {
   padding: 12px;

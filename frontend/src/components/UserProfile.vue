@@ -308,7 +308,7 @@ export default {
 
 .form-input {
   width: 100%;
-  padding: 0.8rem 1rem;
+  padding: 0.8rem 0.3rem;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 1rem;

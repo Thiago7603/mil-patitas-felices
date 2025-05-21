@@ -25,7 +25,33 @@ const getUserNotifications = async (req, res) => {
   }
 };
 
+const deleteNotification = async (req, res) => {
+  const notificationId = req.params.id;
+  const userId = req.user.id;
+
+  console.log('→ DELETE notification ID:', notificationId);
+  console.log('→ User ID from token:', userId);
+
+  try {
+    // Verificar que la notificación pertenece al usuario
+    const check = await pool.query(
+      'SELECT id FROM notifications WHERE id = $1 AND user_id = $2',
+      [notificationId, userId]
+    );
+
+    if (check.rowCount === 0) {
+      console.log('❌ No se encontró la notificación o no pertenece al usuario');
+      return res.status(404).json({ error: 'Notificación no encontrada o no autorizada' });
+    }
+
+    await pool.query('DELETE FROM notifications WHERE id = $1', [notificationId]);
+    res.json({ message: 'Notificación eliminada correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar notificación:', error);
+    res.status(500).json({ error: 'Error al eliminar notificación' });
+  }
+};
 
 
+module.exports = { getUserNotifications, deleteNotification };
 
-module.exports = { getUserNotifications };

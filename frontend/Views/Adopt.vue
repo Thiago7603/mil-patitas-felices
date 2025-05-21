@@ -37,8 +37,8 @@
         <div class="filter-group">
           <label>Ubicación:</label>
           <div class="button-group">
-            <button :class="{ active: filters.location === 'Ciudad A' }" @click="setFilterAndApply('location', 'Ciudad A')">Ciudad A</button>
-            <button :class="{ active: filters.location === 'Ciudad B' }" @click="setFilterAndApply('location', 'Ciudad B')">Ciudad B</button>
+            <button :class="{ active: filters.location === 'Cali - Colombia' }" @click="setFilterAndApply('location', 'Cali - Colombia')">Cali - Colombia</button>
+            <button :class="{ active: filters.location === 'Otra' }" @click="setFilterAndApply('location', 'Otra')">Otra</button>
             <button :class="{ active: filters.location === '' }" @click="setFilterAndApply('location', '')">Todas</button>
           </div>
         </div>
@@ -53,11 +53,11 @@
       </div>
       <section class="animal-list">
         <h2>Animales disponibles</h2>
-        <div v-if="animals.length === 0 && !isLoading" class="no-results">
+        <div v-if="filteredAnimals.length === 0 && !isLoading" class="no-results">
           <p>No se encontraron animales con los filtros seleccionados</p>
         </div>
         <div class="animal-cards" v-else>
-          <div class="animal-card" v-for="animal in animals" :key="animal.id" @click="openAnimalDetail(animal)">
+          <div class="animal-card" v-for="animal in filteredAnimals" :key="animal.id" @click="openAnimalDetail(animal)">
             <div class="card-image-container">
               <img v-if="animal.images && animal.images.length > 0" :src="animal.images[0]" alt="Animal">
               <img v-else src="https://via.placeholder.com/300x200?text=No+Image" alt="Animal">
@@ -133,13 +133,13 @@ const selectedAnimal = ref({}) // Animal seleccionado para mostrar en el modal
 // Configurar los filtros y aplicar inmediatamente
 function setFilterAndApply(key, value) {
   filters.value[key] = value
-  filteredAnimals() // Aplicar filtros automáticamente
+  //filteredAnimals() // Aplicar filtros automáticamente
 }
 
 function setAgeFilterAndApply(min, max) {
   filters.value.minAge = min
   filters.value.maxAge = max
-  filteredAnimals() // Aplicar filtros automáticamente
+  //filteredAnimals() // Aplicar filtros automáticamente
 }
 
 // Función para borrar los filtros
@@ -151,7 +151,7 @@ const clearFilters = () => {
     size: '',
     location: ''
   };
-  filteredAnimals(); // Mostrar todos los animales sin filtros
+  //filteredAnimals(); // Mostrar todos los animales sin filtros
 }
 
 // Obtener animales del backend
@@ -159,7 +159,7 @@ const fetchAnimals = async () => {
   isLoading.value = true;
   try {
     const token = localStorage.getItem('token'); // Obtener el token
-    const response = await axios.get(`http://localhost:4000/api/animals/adopt/${userId}`, {
+    const response = await axios.get(`http://localhost:4000/api/animals/adopt`, {
       headers: {
         'Authorization': `Bearer ${token}`, // Envía el token
         'Accept': 'application/json'
@@ -202,40 +202,33 @@ const fetchAnimals = async () => {
 }
 
 // Obtener animales con filtros
-const filteredAnimals = async () => {
-  isLoading.value = true;
-  try {
-    const query = new URLSearchParams()
+const filteredAnimals = computed(() => {
+  let filteredList = animals.value;
+  console.log('Aplicando filtros. Estado actual de filters:', filters.value); // Depuración 1
+    console.log('Total de animales antes de filtrar:', filteredList.length); // Depuración 2
 
-    if (filters.value.species) query.append('species', filters.value.species)
-    if (filters.value.minAge !== null && filters.value.minAge !== '') query.append('minAge', filters.value.minAge);
-    if (filters.value.maxAge !== null && filters.value.maxAge !== '') query.append('maxAge', filters.value.maxAge);
-    if (filters.value.size) query.append('size', filters.value.size)
-    if (filters.value.location) query.append('location', filters.value.location)
-    if (filters.value.story) query.append('story', filters.value.story)
-    if (filters.value.adoption_requirements) query.append('adoption_requirements', filters.value.adoption_requirements)
-
-    // Realiza la solicitud al backend para obtener los animales
-    const token = localStorage.getItem('token');
-    const response = await axios.get(`http://localhost:4000/api/animals/adopt?${query.toString()}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`, // Enviar el token en los encabezados
-      },
-    });
-
-    animals.value = response.data.map(animal => ({
-      ...animal,
-      images: animal.images && animal.images.length ? 
-        animal.images.map(img => `http://localhost:4000/uploads/${img}`) : 
-        ['/default-animal.png']
-    }));
-  } catch (error) {
-    console.error("Error:", error);
-    error.value = error.message;
-  } finally {
-    isLoading.value = false;
+  if (filters.value.species) {
+    filteredList = filteredList.filter(animal =>
+      animal.species?.toLowerCase() === filters.value.species.toLowerCase()
+    );
   }
-}
+  if (filters.value.minAge !== null && filters.value.maxAge !== null) {
+    filteredList = filteredList.filter(animal =>
+      animal.age >= filters.value.minAge && animal.age <= filters.value.maxAge
+    );
+  }
+  if (filters.value.size) {
+    filteredList = filteredList.filter(animal =>
+      animal.size === filters.value.size
+    );
+  }
+  if (filters.value.location) {
+    filteredList = filteredList.filter(animal =>
+      animal.location === filters.value.location
+    );
+  }
+  return filteredList;
+});
 
 const fetchFavorites = async () => {
       if (!userId) return;

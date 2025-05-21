@@ -94,31 +94,7 @@ const createAnimal = async (req, res) => {
     }
   };
 
-// Obtener animal por ID
-const getAnimalById = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const result = await pool.query(
-      `SELECT a.*,
-              (SELECT ARRAY(
-                 SELECT image_url FROM animal_images WHERE animal_id = a.id
-              )) AS images
-       FROM animals a
-       WHERE a.id = $1`,
-      [id]
-    );
-    if (result.rows.length > 0) {
-      res.json(result.rows[0]);
-    } else {
-      res.status(404).json({ message: 'Animal no encontrado' });
-    }
-  } catch (error) {
-    console.error('Error al obtener animal por ID:', error);
-    res.status(500).json({ message: 'Error al obtener los datos del animal' });
-  }
-};
-
-// Obtener todos los animales con filtros
+  // Obtener todos los animales con filtros
 const getAllAnimals = async (req, res) => {
   try {
     let query = `SELECT a.*, 
@@ -129,9 +105,10 @@ const getAllAnimals = async (req, res) => {
     
     const queryParams = [];
     const conditions = [];
+    console.log('Filtros recibidos en getAllAnimals:', req.query); // <-- Importante
 
     // Agregar condición para no mostrar animales adoptados
-    conditions.push(`a.adopted = false`);
+    conditions.push(`a.adopted = FALSE`);
 
     // Filtrar por especie
     if (req.query.species) {
@@ -183,6 +160,30 @@ const getAllAnimals = async (req, res) => {
   } catch (error) {
     console.error('Error al obtener animales:', error);
     res.status(500).json({ error: 'Error al obtener animales' });
+  }
+};
+
+// Obtener animal por ID
+const getAnimalById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      `SELECT a.*,
+              (SELECT ARRAY(
+                 SELECT image_url FROM animal_images WHERE animal_id = a.id
+              )) AS images
+       FROM animals a
+       WHERE a.id = $1`,
+      [id]
+    );
+    if (result.rows.length > 0) {
+      res.json(result.rows[0]);
+    } else {
+      res.status(404).json({ message: 'Animal no encontrado' });
+    }
+  } catch (error) {
+    console.error('Error al obtener animal por ID:', error);
+    res.status(500).json({ message: 'Error al obtener los datos del animal' });
   }
 };
 

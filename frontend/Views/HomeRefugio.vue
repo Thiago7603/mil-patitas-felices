@@ -21,6 +21,13 @@
             >
               Todos
             </button>
+            <button
+              class="filter-btn"
+              :class="{ 'active': filter === 'available' }"
+              @click="filter = 'available'"
+            >
+              Disponibles para Adopción
+            </button>
             <button 
               class="filter-btn" 
               :class="{ 'active': filter === 'dog' }" 
@@ -60,7 +67,12 @@
                 loading="lazy"
               />
               <div class="card-overlay">
-                <span class="status-badge">{{ animal.status || 'Disponible' }}</span>
+                <span 
+                  class="status-badge" 
+                  :class="{ 'adopted': animal.adopted }" 
+                >
+                  {{ animal.adopted ? 'Adoptado' : 'Disponible' }}
+                </span>
               </div>
             </div>
             <div class="card-body">
@@ -94,8 +106,8 @@
         <img :src="selectedAnimal.images[0]" :alt="`Foto de ${selectedAnimal.name}`" class="modal-image" />
         <p><strong>Edad:</strong> {{ selectedAnimal.age }} años</p>
         <p><strong>Especie:</strong> {{ formatSpecies(selectedAnimal.species) }}</p>
-        <p><strong>Estado:</strong> {{ selectedAnimal.status || 'Disponible' }}</p>
-        <p><strong>Descripción:</strong> {{ selectedAnimal.description || 'Sin descripción' }}</p>
+        <p><strong>Estado:</strong> {{ selectedAnimal.health_status || 'Disponible' }}</p>
+        <p><strong>Descripción:</strong> {{ selectedAnimal.story || 'Sin descripción' }}</p>
       </div>
     </div>
 
@@ -120,13 +132,19 @@
     computed: {
       filteredAnimals() {
         let list = this.animals;
-        if (this.filter === 'dog') {
-          list = list.filter(a => a.species?.toLowerCase() === 'perro');
-        } else if (this.filter === 'cat') {
+        if (this.filter === 'avaible') {
+          list = list.filter(a => !a.adopted);
+        } else if (this.filter === 'dog') {
+          list = list.filter(a => a.species?.toLowerCase() === 'perro'); 
+        }else if (this.filter === 'cat') {
           list = list.filter(a => a.species?.toLowerCase() === 'gato');
         } else if (this.filter === 'others') {
           list = list.filter(a => !['perro', 'gato'].includes(a.species?.toLowerCase()));
         }
+        if (this.filter !== 'all') { // Si no es "Todos", solo mostramos los no adoptados (salvo que sea 'available', que ya lo hace)
+          list = list.filter(a => !a.adopted);
+        }
+
         return list;
       }
   },
@@ -303,6 +321,10 @@
   font-size: 0.8rem;
 }
 
+.status-badge.adopted {
+  background-color: #D32F2F;
+}
+
 .card-body {
   padding: 1rem;
   text-align: center;
@@ -338,7 +360,7 @@
 }
 
 .edit-animal-btn {
-  background-color: #075aff; /* Un color amarillo/ámbar para editar */
+  background-color: #075aff;
   color: white;
   padding: 0.5rem 1rem;
   border: none;

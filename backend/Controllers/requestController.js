@@ -64,8 +64,8 @@ const updateRequestStatus = async (req, res) => {
       // Crear notificación para el solicitante aceptado
       if (userId) {
         await pool.query(`
-          INSERT INTO notifications (user_id, message) VALUES ($1, $2)
-        `, [userId, 'Tu solicitud de adopción fue aceptada. ¡Felicitaciones!']);
+          INSERT INTO notifications (user_id, message, animal_id) VALUES ($1, $2, $3)
+        `, [userId, 'Tu solicitud de adopción fue aceptada. ¡Felicitaciones!', animalId]);
       }
 
       // Crear notificaciones para usuarios cuyas solicitudes fueron rechazadas automáticamente

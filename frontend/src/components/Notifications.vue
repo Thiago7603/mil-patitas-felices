@@ -30,6 +30,7 @@
           </div>
           <div class="notification-content">
             <p class="message">{{ note.message }}</p>
+            <p v-if="note.animal_name"><strong>Animal:</strong> {{ note.animal_name }}</p>
             <span class="timestamp">{{ formatDate(note.created_at) }}</span>
           </div>
           <button v-if="!note.read" @click="markAsRead(note.id)" 

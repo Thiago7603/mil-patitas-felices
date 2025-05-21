@@ -75,15 +75,15 @@ const updateRequestStatus = async (req, res) => {
 
       for (const row of rejectedRequests.rows) {
         await pool.query(`
-          INSERT INTO notifications (user_id, message) VALUES ($1, $2)
-        `, [row.user_id, 'Tu solicitud de adopción fue rechazada.']);
+          INSERT INTO notifications (user_id, message, animal_id) VALUES ($1, $2, $3)
+        `, [row.user_id, 'Tu solicitud de adopción fue rechazada.', row.animalId]);
       }
 
     } else if (status === 'rechazada' && userId) {
       // Si la solicitud fue rechazada manualmente, crear notificación para ese usuario
       await pool.query(`
-        INSERT INTO notifications (user_id, message) VALUES ($1, $2)
-      `, [userId, 'Tu solicitud de adopción fue rechazada.']);
+        INSERT INTO notifications (user_id, message, animal_id) VALUES ($1, $2, $3)
+      `, [userId, 'Tu solicitud de adopción fue rechazada.', animalId]);
     }
 
     res.json({ message: `Solicitud ${status} correctamente` });
